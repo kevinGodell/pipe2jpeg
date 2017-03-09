@@ -8,7 +8,7 @@ npm install pipe2jpeg --save
 ```
 const spawn = require('child_process').spawn;
 
-const P2j = require('pipe2jpeg');
+const P2J = require('pipe2jpeg');
 
 const ffmpegParams = [
     '-loglevel',
@@ -37,7 +37,7 @@ const ffmpegParams = [
 
 const ffmpeg = spawn('ffmpeg', ffmpegParams);
 
-const p2j = new P2j().on('jpeg', (jpeg) => {
+const p2j = new P2J().on('jpeg', (jpeg) => {
     //will log size of jpeg and also show the SOI(0xFF, 0xD8) and EOI(0xFF, 0xD9) markers to verify 
     console.log('found jpeg', jpeg.length, jpeg[0], jpeg[1], jpeg[jpeg.length - 2], jpeg[jpeg.length - 1]);
 });

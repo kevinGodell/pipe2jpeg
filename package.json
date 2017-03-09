@@ -1,6 +1,6 @@
 {
   "name": "pipe2jpeg",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Parse individual jpegs from an ffmpeg pipe when output codec is set to mjpeg and format is set to image2pipe, singlejpeg, mjpeg, or mpjeg.",
   "main": "index.js",
   "dependencies": {
