@@ -1,5 +1,6 @@
 # pipe2jpeg
 Parse individual jpegs from an ffmpeg pipe when output codec(-c:v) is set to mjpeg and format(-f) is set to image2pipe, singlejpeg, mjpeg, or mpjpeg.
+
 ###installation:
 ``` 
 npm install pipe2jpeg --save
