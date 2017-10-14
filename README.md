@@ -1,11 +1,14 @@
 # pipe2jpeg
-Parse individual jpegs from an ffmpeg pipe when output codec(-c:v) is set to ***mjpeg*** and format(-f) is set to ***image2pipe***, ***singlejpeg***, ***mjpeg***, or ***mpjpeg***. All jpegs will be found regardless of size or fps. See tests for verification.
+Parse individual jpegs from an ffmpeg pipe when output codec(**-c:v**) is set to ***mjpeg*** and format(**-f**) is set to ***image2pipe***, ***singlejpeg***, ***mjpeg***, or ***mpjpeg***. All jpegs will be found regardless of size or fps. See [tests](https://github.com/kevinGodell/pipe2jpeg/tree/master/tests) for verification.
 
 ### installation:
 ``` 
 npm install pipe2jpeg --save
 ```
 ### usage:
+
+The following [example](https://github.com/kevinGodell/pipe2jpeg/blob/master/examples/example.js) uses ffmpeg's **testsrc** to simulate a video input and generate 100 downscaled jpeg images at a rate of 1 per second. The jpeg images are piped in from ffmpeg's stdout and parsed for the start of image(SOI) and end of image(EOI) file markers. Pipe2Jpeg dispatches a "jpeg" event that contains a complete jpeg image:
+
 ```
 const P2J = require('pipe2jpeg');
 
@@ -59,4 +62,27 @@ ffmpeg.on('exit', (code, signal) => {
 });
 
 ffmpeg.stdout.pipe(p2j);
+```
+
+### testing:
+
+Clone the repository
+
+```
+git clone https://github.com/kevinGodell/pipe2jpeg.git
+```
+
+Change into the directory
+```
+cd pipe2jpeg
+```
+
+Initialize with npm
+```
+npm install
+```
+
+Start the tests
+```
+npm test
 ```
