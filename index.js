@@ -15,10 +15,7 @@ function Pipe2Jpeg() {
 util.inherits(Pipe2Jpeg, Transform);
 
 Pipe2Jpeg.prototype._transform = function (chunk, encoding, callback) {
-    var soi = null;
-    var eoi = null;
-    var jpeg = null;
-    for (let i = 0, length = chunk.length; i < length; i++) {
+    for (let i = 0, soi, eoi, jpeg, length = chunk.length; i < length; i++) {
         if (this._buffer || chunk[soi = i] === 0xFF && chunk[i + 1] === 0xD8) {
             eoi = null;
             for (i; i < length; i++) {
