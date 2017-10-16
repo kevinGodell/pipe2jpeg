@@ -27,7 +27,12 @@ Pipe2Jpeg.prototype._transform = function (chunk, encoding, callback) {
                     } else {
                         jpeg = chunk.slice(soi, eoi);
                     }
-                    this.emit('jpeg', jpeg);
+                    if (this._readableState.pipesCount > 0) {
+                        this.push(jpeg);
+                    }
+                    if (this.listenerCount('jpeg') > 0) {
+                        this.emit('jpeg', jpeg);
+                    }
                     jpeg = null;
                     break;
                 }
