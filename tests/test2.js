@@ -20,7 +20,8 @@ let jpegCounter = 0;
 const params = [
     /* log info to console */
     '-loglevel',
-    'info',
+    'quiet',
+    '-stats',
     
     /* use an artificial video input */
     '-re',
