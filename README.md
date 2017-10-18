@@ -1,3 +1,5 @@
+
+[![Build Status](https://travis-ci.org/kevinGodell/pipe2jpeg.svg?branch=master)](https://travis-ci.org/kevinGodell/pipe2jpeg)
 # pipe2jpeg
 Parse individual jpegs from an ffmpeg pipe when output codec(**-c:v**) is set to ***mjpeg*** and format(**-f**) is set to ***image2pipe***, ***singlejpeg***, ***mjpeg***, or ***mpjpeg***. All jpegs will be found regardless of size or fps. See [testing](https://www.npmjs.com/package/pipe2jpeg#testing) instructions for verification.
 
