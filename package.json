@@ -6,7 +6,7 @@
   "dependencies": {},
   "devDependencies": {},
   "scripts": {
-    "test": "node tests/test.js; node tests/test2.js; node tests/test3.js"
+    "test": "node tests/test.js && node tests/test2.js && node tests/test3.js"
   },
   "repository": {
     "type": "git",

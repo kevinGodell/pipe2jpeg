@@ -42,3 +42,4 @@ jspm_packages
 examples
 tests
 index2.js
+.travis.yml
