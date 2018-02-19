@@ -4,19 +4,38 @@ const Transform = require('stream').Transform;
 
 class Pipe2Jpeg extends Transform {
 
+    /**
+     *
+     * @param options
+     */
     constructor(options) {
         super(options);
         this._buffer = null;
     }
 
+    /**
+     *
+     * @return {*|null}
+     */
     get jpeg() {
         return this._jpeg || null;
     }
 
+    /**
+     *
+     * @return {number | *}
+     */
     get timestamp() {
         return this._timestamp || -1;
     }
 
+    /**
+     *
+     * @param chunk
+     * @param encoding
+     * @param callback
+     * @private
+     */
     _transform(chunk, encoding, callback) {
         for (let i = 0, soi, eoi, jpeg, length = chunk.length; i < length; i++) {
             if (this._buffer || chunk[soi = i] === 0xFF && chunk[i + 1] === 0xD8) {
@@ -56,4 +75,8 @@ class Pipe2Jpeg extends Transform {
 
 }
 
+/**
+ *
+ * @type {Pipe2Jpeg}
+ */
 module.exports = Pipe2Jpeg;
