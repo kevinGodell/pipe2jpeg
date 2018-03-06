@@ -1,5 +1,8 @@
 .idea/
-examples
-tests
+node_modules/
+examples/
+tests/
+docs/
 .travis.yml
+appveyor.yml
 .jshintrc
