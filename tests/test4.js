@@ -1,7 +1,7 @@
 // jshint esversion: 6, globalstrict: true, strict: true
 'use strict';
 
-console.time('==========> single jpeg packed into single piped chunk');
+console.time('==========> single jpeg in mpjpeg split between multiple piped chunks');
 
 const assert = require('assert');
 
@@ -11,9 +11,9 @@ const spawn = require('child_process').spawn;
 
 const jpegCount = 10;
 
-const fps = 1;
+const fps = 10;
 
-const scale = 1 / 50;
+const scale = 4;
 
 let jpegCounter = 0;
 
@@ -37,7 +37,8 @@ const params = [
     '-pix_fmt',
     'yuvj422p',
     '-f',
-    'image2pipe',
+    //'image2pipe',
+    'mpjpeg',
     '-vf',
     `fps=${fps},scale=iw*${scale}:ih*${scale}`,
     '-q',
@@ -67,7 +68,7 @@ ffmpeg.on('error', (error) => {
 ffmpeg.on('exit', (code, signal) => {
     assert(code === 0, `FFMPEG exited with code ${code} and signal ${signal}`);
     assert(jpegCounter === jpegCount, `did not get ${jpegCount} jpegs`);
-    console.timeEnd('==========> single jpeg packed into single piped chunk');
+    console.timeEnd('==========> single jpeg in mpjpeg split between multiple piped chunks');
 });
 
 ffmpeg.stdout.pipe(p2j);
