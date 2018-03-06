@@ -13,7 +13,7 @@ const jpegCount = 10;
 
 const fps = 1;
 
-const scale = 1/50;
+const scale = 1 / 50;
 
 let jpegCounter = 0;
 
@@ -22,7 +22,7 @@ const params = [
     '-loglevel',
     'quiet',
     '-stats',
-    
+
     /* use an artificial video input */
     '-re',
     '-f',
