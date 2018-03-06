@@ -7,6 +7,8 @@ const assert = require('assert');
 
 const P2J = require('../index');
 
+const ffmpegPath = require('ffmpeg-static').path;
+
 const spawn = require('child_process').spawn;
 
 const jpegCount = 10;
@@ -59,7 +61,7 @@ p2j.on('jpeg', (jpeg) => {
     assert(jpeg[length - 1] === 0xD9, 'jpeg[length - 1] not equal to 0xD9');
 });
 
-const ffmpeg = spawn('ffmpeg', params, {stdio: ['ignore', 'pipe', 'inherit']});
+const ffmpeg = spawn(ffmpegPath, params, {stdio: ['ignore', 'pipe', 'inherit']});
 
 ffmpeg.on('error', (error) => {
     console.log(error);
