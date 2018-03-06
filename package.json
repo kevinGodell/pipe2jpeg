@@ -6,7 +6,7 @@
   "dependencies": {},
   "devDependencies": {},
   "scripts": {
-    "test": "node tests/test.js && node tests/test2.js && node tests/test3.js",
+    "test": "node tests/test && node tests/test2 && node tests/test3 && node tests/test4",
     "preversion": "npm test",
     "postversion": "npm run doc",
     "doc": "jsdoc index.js -d docs && git commit -m 'update docs' -- docs"
