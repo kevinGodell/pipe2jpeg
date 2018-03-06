@@ -1,6 +1,6 @@
 'use strict';
 
-const { Transform } = require('stream');
+const {Transform} = require('stream');
 
 const _SOI = new Buffer([0xff, 0xd8]);
 const _EOI = new Buffer([0xff, 0xd9]);
