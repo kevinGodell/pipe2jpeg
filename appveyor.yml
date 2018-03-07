@@ -1,26 +1,15 @@
-image:
-- Ubuntu
-- Visual Studio 2017
+image: Visual Studio 2017
 environment:
-  APPVEYOR_YML_DISABLE_PS_LINUX: true
   matrix:
     - nodejs_version: 7
-      stack: node 7
     - nodejs_version: LTS
-      stack: node 8
     - nodejs_version: Current
-      stack: node 9
-
 platform:
   - x86
   - x64
-
 cache:
   - node_modules
-
 install:
-  - sh: uname -m
-  - sh: uname -a
   - ps: Install-Product node $env:nodejs_version $env:platform
   - npm install
   - ps: $env:package_version = (Get-Content -Raw -Path package.json | ConvertFrom-Json).version
