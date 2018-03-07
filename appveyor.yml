@@ -1,9 +1,5 @@
 image:
 - Ubuntu
-  stack:
-    - node 7
-    - node 8
-    - node 9
 - Visual Studio 2017
   matrix:
     - nodejs_version: 7
@@ -18,6 +14,10 @@ image:
       platform:
         - x86
         - x64
+stack:
+  - node 7
+  - node 8
+  - node 9
 environment:
   APPVEYOR_YML_DISABLE_PS_LINUX: true
 cache:
