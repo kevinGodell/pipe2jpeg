@@ -1,12 +1,14 @@
 environment:
-  APPVEYOR_YML_DISABLE_PS_LINUX: true
   matrix:
     - image: ubuntu
       stack: node 7
+      APPVEYOR_YML_DISABLE_PS_LINUX: true
     - image: ubuntu
       stack: node 8
+      APPVEYOR_YML_DISABLE_PS_LINUX: true
     - image: ubuntu
       stack: node 9
+      APPVEYOR_YML_DISABLE_PS_LINUX: true
     - image: Visual Studio 2017
       nodejs_version: 7
       platform: x86
