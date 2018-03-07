@@ -1,12 +1,12 @@
 image: Visual Studio 2017
 environment:
-  matrix:
-    - nodejs_version: 7
-    - nodejs_version: LTS
-    - nodejs_version: Current
-platform:
-  - x86
-  - x64
+    nodejs_version:
+     - 7
+     - LTS
+     - Current
+    platform:
+      - x86
+      - x64
 cache:
   - node_modules
 install:
