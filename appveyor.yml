@@ -1,18 +1,12 @@
-image:
- - Ubuntu
- - Visual Studio 2017
 environment:
+  APPVEYOR_YML_DISABLE_PS_LINUX: true
   matrix:
-    stack:
-      - node 7
-        - nodejs_version: 7
-      - node 8
-        - nodejs_version: LTS
-      - node 9
-        - nodejs_version: Current
-platform:
-  - x86
-  - x64
+    - platform: x64
+      image:
+        - Visual Studio 2017
+          nodejs_version: LTS
+        - Ubuntu
+          stack: node7
 cache:
   - node_modules
 install:
