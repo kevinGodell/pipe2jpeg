@@ -2,6 +2,7 @@ image:
 - Visual Studio 2017
 - Ubuntu
 environment:
+  APPVEYOR_YML_DISABLE_PS_LINUX: true
   matrix:
     - nodejs_version: 7
     - nodejs_version: LTS

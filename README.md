@@ -1,5 +1,5 @@
 # pipe2jpeg
-###### [![Build Status](https://travis-ci.org/kevinGodell/pipe2jpeg.svg?branch=master)](https://travis-ci.org/kevinGodell/pipe2jpeg) [![GitHub issues](https://img.shields.io/github/issues/kevinGodell/pipe2jpeg.svg)](https://github.com/kevinGodell/pipe2jpeg/issues) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/kevinGodell/pipe2jpeg/master/LICENSE)
+###### [![Build Status](https://travis-ci.org/kevinGodell/pipe2jpeg.svg?branch=master)](https://travis-ci.org/kevinGodell/pipe2jpeg) [![Build status](https://ci.appveyor.com/api/projects/status/jbqs74nnvc1x7v9u/branch/master?svg=true)](https://ci.appveyor.com/project/kevinGodell/pipe2jpeg/branch/master) [![GitHub issues](https://img.shields.io/github/issues/kevinGodell/pipe2jpeg.svg)](https://github.com/kevinGodell/pipe2jpeg/issues) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/kevinGodell/pipe2jpeg/master/LICENSE)
 Parse individual jpegs from an ffmpeg pipe when output codec(**-c:v**) is set to ***mjpeg*** and format(**-f**) is set to ***image2pipe***, ***singlejpeg***, ***mjpeg***, or ***mpjpeg***. All jpegs will be found regardless of size or fps. See [testing](https://www.npmjs.com/package/pipe2jpeg#testing) instructions for verification.
 ### installation:
 ``` 
