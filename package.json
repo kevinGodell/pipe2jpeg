@@ -5,13 +5,23 @@
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
-    "ffmpeg-static": "^2.1.0"
+    "@ffmpeg-installer/ffmpeg": "^1.0.19",
+    "eslint": "^6.0.1",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "jsdoc": "^3.6.3",
+    "nodemon": "^1.19.1",
+    "prettier": "^1.18.2"
   },
   "scripts": {
-    "test": "node tests/test && node tests/test2 && node tests/test3 && node tests/test4",
+    "start": "node examples/example.js",
+    "dev": "nodemon examples/example.js",
+    "test": "node tests/test.js && node tests/test2.js && node tests/test3.js",
     "preversion": "npm test",
     "postversion": "npm run doc",
-    "doc": "jsdoc index.js -d docs && git commit -m 'update docs' -- docs"
+    "doc": "jsdoc index.js -d docs && git commit -m \"update docs\" -- docs",
+    "pack": "npm pack",
+    "lint": "eslint --fix --ext .js --ignore-path .gitignore ."
   },
   "repository": {
     "type": "git",
@@ -30,5 +40,8 @@
   "bugs": {
     "url": "https://github.com/kevinGodell/pipe2jpeg/issues"
   },
-  "homepage": "https://github.com/kevinGodell/pipe2jpeg#readme"
+  "homepage": "https://github.com/kevinGodell/pipe2jpeg#readme",
+  "files": [
+    "index.js"
+  ]
 }
