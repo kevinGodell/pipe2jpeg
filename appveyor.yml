@@ -1,9 +1,9 @@
 image: Visual Studio 2017
 environment:
   matrix:
-    - nodejs_version: 7
+    - nodejs_version: '7'
       platform: x86
-    - nodejs_version: 7
+    - nodejs_version: '7'
       platform: x64
     - nodejs_version: LTS
       platform: x86
@@ -24,4 +24,4 @@ test_script:
   - node --version
   - npm --version
   - npm test
-build: off
+build: false
