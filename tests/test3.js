@@ -50,7 +50,7 @@ const params = [
 
 const p2j = new P2J();
 
-p2j.on('jpeg', (jpeg) => {
+p2j.on('jpeg', jpeg => {
   jpegCounter++;
   const length = jpeg.length;
   assert(jpeg[0] === 0xff, 'jpeg[0] not equal to 0xFF');
@@ -61,7 +61,7 @@ p2j.on('jpeg', (jpeg) => {
 
 const ffmpeg = spawn(ffmpegPath, params, { stdio: ['ignore', 'pipe', 'inherit'] });
 
-ffmpeg.on('error', (error) => {
+ffmpeg.on('error', error => {
   console.log(error);
 });
 
