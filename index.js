@@ -2,8 +2,8 @@
 
 const { Transform } = require('stream');
 
-const _SOI = Buffer.from([0xff, 0xd8]); //jpeg start of image ff08
-const _EOI = Buffer.from([0xff, 0xd9]); //jpeg end of image ff09
+const _SOI = Buffer.from([0xff, 0xd8]); // jpeg start of image ff08
+const _EOI = Buffer.from([0xff, 0xd9]); // jpeg end of image ff09
 
 /**
  * @fileOverview Creates a stream transform for parsing piped jpegs from ffmpeg.
@@ -92,7 +92,7 @@ class Pipe2Jpeg extends Transform {
         if (soi === -1) {
           break;
         } else {
-          //todo might add option or take sample average / 2 to jump position for small gain
+          // todo might add option or take sample average / 2 to jump position for small gain
           pos = soi + 500;
         }
         const eoi = chunk.indexOf(_EOI, pos);
