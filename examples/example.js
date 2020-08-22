@@ -27,7 +27,7 @@ const params = [
   '-pix_fmt',
   'yuvj422p',
   '-f',
-  'image2pipe', //image2pipe, singlejpeg, mjpeg, or mpjpeg
+  'image2pipe', // image2pipe, singlejpeg, mjpeg, or mpjpeg
   '-vf',
   'fps=1,scale=640:360',
   '-q',
@@ -39,13 +39,13 @@ const params = [
 
 const p2j = new P2J();
 
-p2j.on('jpeg', (jpeg) => {
+p2j.on('jpeg', jpeg => {
   console.log('received jpeg', ++jpegCounter, jpeg.length);
 });
 
 const ffmpeg = spawn(ffmpegPath, params, { stdio: ['ignore', 'pipe', 'ignore'] });
 
-ffmpeg.on('error', (error) => {
+ffmpeg.on('error', error => {
   console.log(error);
 });
 
