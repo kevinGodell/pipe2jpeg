@@ -1,5 +1,5 @@
 {
-  "name": "@lumen5/pipe2jpeg",
+  "name": "lumen5-pipe2jpeg",
   "version": "0.3.1",
   "description": "Parse individual jpegs from an ffmpeg pipe when output codec is set to mjpeg and format is set to image2pipe, singlejpeg, mjpeg, or mpjeg.",
   "main": "index.js",
