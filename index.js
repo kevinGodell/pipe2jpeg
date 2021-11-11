@@ -19,7 +19,7 @@ class Pipe2Jpeg extends Transform {
     super(options);
     this._chunks = [];
     this._size = 0;
-    this._increment = options?.increment ?? 500;
+    this._increment = options?.increment ?? 250;
   }
 
   /**
