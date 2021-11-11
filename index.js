@@ -19,6 +19,7 @@ class Pipe2Jpeg extends Transform {
     super(options);
     this._chunks = [];
     this._size = 0;
+    this._increment = options?.increment ?? 500;
   }
 
   /**
@@ -92,8 +93,7 @@ class Pipe2Jpeg extends Transform {
         if (soi === -1) {
           break;
         } else {
-          // todo might add option or take sample average / 2 to jump position for small gain
-          pos = soi + 500;
+          pos = soi + this._increment;
         }
         const eoi = chunk.indexOf(_EOI, pos);
         if (eoi === -1) {
