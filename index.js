@@ -20,7 +20,7 @@ class Pipe2Jpeg extends Transform {
     this._chunks = [];
     this._size = 0;
 
-    this._lastSize = 0;
+    this._lastJpegSize = 0;
     this._lastByte = null;
   }
 
@@ -58,6 +58,7 @@ class Pipe2Jpeg extends Transform {
       this.push(this._jpeg);
     }
     this.emit('jpeg', this._jpeg);
+    this._lastJpegSize = this._jpeg.length;
   }
 
   /**
@@ -94,7 +95,6 @@ class Pipe2Jpeg extends Transform {
           this._size += sliced.length;
           this._jpeg = Buffer.concat(this._chunks, this._size);
           this._chunks = [];
-          this._lastSize = this._size;
           this._size = 0;
           this._sendJpeg();
           if (pos === chunkLength) {
@@ -102,12 +102,12 @@ class Pipe2Jpeg extends Transform {
           }
         }
       } else {
-        if (this._lastByte === _SOI[0] && chunk[0] === _SOI[1]) {
+        if (pos > 0 && this._lastByte === _SOI[0] && chunk[0] === _SOI[1]) {
           // SOI was split across chunks
           const startByte = Buffer.from([_SOI[0]]);
           chunk = Buffer.concat([startByte, chunk]);
           chunkLength += 1;
-          pos = Math.max(pos - 1, 0);
+          pos -= 1;
         }
         const soi = chunk.indexOf(_SOI, pos);
         if (soi === -1) {
@@ -116,7 +116,7 @@ class Pipe2Jpeg extends Transform {
           break;
         } else {
           // as an optimization, jump forward half of the previous jpeg size
-          const stepForward = this._lastSize / 2;
+          const stepForward = Math.floor(this._lastJpegSize / 2);
           pos = soi + stepForward;
         }
         const eoi = chunk.indexOf(_EOI, pos);
@@ -128,7 +128,6 @@ class Pipe2Jpeg extends Transform {
         } else {
           pos = eoi + 2;
           this._jpeg = chunk.slice(soi, pos);
-          this._lastSize = this._jpeg.length;
           this._sendJpeg();
           if (pos === chunkLength) {
             break;
