@@ -19,7 +19,9 @@ class Pipe2Jpeg extends Transform {
     super(options);
     this._chunks = [];
     this._size = 0;
-    this._increment = options?.increment ?? 250;
+
+    this._lastJpegSize = 0;
+    this._lastByte = null;
   }
 
   /**
@@ -56,6 +58,7 @@ class Pipe2Jpeg extends Transform {
       this.push(this._jpeg);
     }
     this.emit('jpeg', this._jpeg);
+    this._lastJpegSize = this._jpeg.length;
   }
 
   /**
@@ -66,10 +69,20 @@ class Pipe2Jpeg extends Transform {
    * @private
    */
   _transform(chunk, encoding, callback) {
-    const chunkLength = chunk.length;
+    let chunkLength = chunk.length;
     let pos = 0;
     while (true) {
       if (this._size) {
+        const lastChunk = this._chunks[this._chunks.length - 1];
+        const lastByte = lastChunk[lastChunk.length - 1];
+        if (lastByte === _EOI[0] && chunk[0] === _EOI[1]) {
+          // EOI was split across chunks, remove it from the previous chunk and add it to this one
+          this._chunks[this._chunks.length - 1] = lastChunk.slice(0, lastChunk.length - 1);
+          this._size -= 1;
+          const startByte = Buffer.from([_EOI[0]]);
+          chunk = Buffer.concat([startByte, chunk]);
+          chunkLength += 1;
+        }
         const eoi = chunk.indexOf(_EOI);
         if (eoi === -1) {
           this._chunks.push(chunk);
@@ -89,11 +102,22 @@ class Pipe2Jpeg extends Transform {
           }
         }
       } else {
+        if (pos > 0 && this._lastByte === _SOI[0] && chunk[0] === _SOI[1]) {
+          // SOI was split across chunks
+          const startByte = Buffer.from([_SOI[0]]);
+          chunk = Buffer.concat([startByte, chunk]);
+          chunkLength += 1;
+          pos -= 1;
+        }
         const soi = chunk.indexOf(_SOI, pos);
         if (soi === -1) {
+          // save the last byte in case the soi is broken across chunks
+          this._lastByte = chunk[chunkLength - 1];
           break;
         } else {
-          pos = soi + this._increment;
+          // as an optimization, jump forward half of the previous jpeg size
+          const stepForward = Math.floor(this._lastJpegSize / 2);
+          pos = soi + stepForward;
         }
         const eoi = chunk.indexOf(_EOI, pos);
         if (eoi === -1) {
