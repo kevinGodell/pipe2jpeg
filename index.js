@@ -111,7 +111,12 @@ class Pipe2Jpeg extends Transform {
         }
       }
     }
-    callback();
+    if(this.isPaused()){
+      this.once("resume", callback)
+    }
+    else{
+        callback()
+    }
   }
 
   /**
