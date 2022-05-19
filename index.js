@@ -115,8 +115,9 @@ class Pipe2Jpeg extends Transform {
           this._lastByte = chunk[chunkLength - 1];
           break;
         } else {
-          // as an optimization, jump forward half of the previous jpeg size
-          const stepForward = Math.floor(this._lastJpegSize / 2);
+          // as an optimization, jump forward 1% of the previous jpeg size
+          // if this is too big we'll miss the next image!
+          const stepForward = Math.floor(this._lastJpegSize / 100);
           pos = soi + stepForward;
         }
         const eoi = chunk.indexOf(_EOI, pos);
