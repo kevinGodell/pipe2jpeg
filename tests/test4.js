@@ -58,15 +58,15 @@ const p2j = new Pipe2Jpeg();
 
 const myStream = new Writable();
 
-myStream._write = (chunk, encoding, callback) => {
+myStream._write = (jpeg, encoding, callback) => {
   jpegCounter++;
-  const length = chunk.length;
-  assert(chunk[0] === 0xff, 'jpeg[0] not equal to 0xFF');
-  assert(chunk[1] === 0xd8, 'jpeg[1] not equal to 0xD8');
-  assert(chunk[length - 2] === 0xff, 'jpeg[length - 1] not equal to 0xFF');
-  assert(chunk[length - 1] === 0xd9, 'jpeg[length - 1] not equal to 0xD9');
-  assert(chunk.indexOf(soi) === chunk.lastIndexOf(soi));
-  assert(chunk.indexOf(eoi) === chunk.lastIndexOf(eoi));
+  const length = jpeg.length;
+  assert(jpeg[0] === 0xff, 'jpeg[0] not equal to 0xFF');
+  assert(jpeg[1] === 0xd8, 'jpeg[1] not equal to 0xD8');
+  assert(jpeg[length - 2] === 0xff, 'jpeg[length - 1] not equal to 0xFF');
+  assert(jpeg[length - 1] === 0xd9, 'jpeg[length - 1] not equal to 0xD9');
+  assert(jpeg.indexOf(soi) === jpeg.lastIndexOf(soi));
+  assert(jpeg.indexOf(eoi) === jpeg.lastIndexOf(eoi));
   callback();
 };
 
