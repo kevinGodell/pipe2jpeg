@@ -3,20 +3,19 @@
   "version": "0.3.1",
   "description": "Parse individual jpegs from an ffmpeg pipe when output codec is set to mjpeg and format is set to image2pipe, singlejpeg, mjpeg, or mpjeg.",
   "main": "index.js",
-  "dependencies": {},
   "devDependencies": {
-    "@ffmpeg-installer/ffmpeg": "^1.0.20",
-    "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-plugin-prettier": "^3.1.4",
-    "jsdoc": "^3.6.5",
-    "nodemon": "^1.19.4",
-    "prettier": "^1.19.1"
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "jsdoc": "^3.6.11",
+    "nodemon": "^2.0.19",
+    "prettier": "^2.7.1"
   },
   "scripts": {
     "start": "node examples/example.js",
     "dev": "nodemon examples/example.js",
-    "test": "node tests/test.js && node tests/test2.js && node tests/test3.js",
+    "test": "node tests/test1.js && node tests/test2.js && node tests/test3.js && node tests/test4.js && node tests/test5.js && node tests/test6.js",
     "preversion": "npm test",
     "postversion": "npm run doc",
     "doc": "jsdoc index.js -d docs && git commit -m \"update docs\" -- docs",
