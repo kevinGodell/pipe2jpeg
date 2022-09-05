@@ -4,5 +4,5 @@ module.exports = {
   semi: true,
   singleQuote: true,
   quoteProps: 'as-needed',
-  arrowParens: 'avoid'
+  arrowParens: 'avoid',
 };
