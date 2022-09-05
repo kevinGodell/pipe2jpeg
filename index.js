@@ -81,18 +81,18 @@ class Pipe2Jpeg extends Transform {
       if (this._findStart === true) {
         // searching for soi
         if (this._markerSplit === true && chunk[0] === _SOI[1]) {
-          this._findStart = false;
-          this._markerSplit = false;
           pos = 1 + this._byteOffset;
           this._chunks.push(_SOI.subarray(0, 1));
           this._size = 1;
+          this._findStart = false;
+          this._markerSplit = false;
           continue;
         }
         soi = chunk.indexOf(_SOI, pos);
         if (soi !== -1) {
+          pos = soi + 2 + this._byteOffset;
           this._findStart = false;
           this._markerSplit = false;
-          pos = soi + 2 + this._byteOffset;
           continue;
         }
         this._markerSplit = chunk[chunkLen - 1] === _SOI[0];
@@ -100,16 +100,16 @@ class Pipe2Jpeg extends Transform {
       } else {
         // searching for eoi
         if (this._markerSplit === true && chunk[0] === _EOI[1]) {
-          this._markerSplit = false;
-          this._findStart = true;
           pos = 1;
-          const cropped = chunk.subarray(0, pos);
+          const cropped = pos === chunkLen ? chunk : chunk.subarray(0, pos);
           this._chunks.push(cropped);
           this._size += cropped.length;
           this._jpeg = Buffer.concat(this._chunks, this._size);
           this._sendJpeg();
           this._size = 0;
           this._chunks = [];
+          this._markerSplit = false;
+          this._findStart = true;
           if (pos === chunkLen) {
             break;
           }
@@ -117,11 +117,9 @@ class Pipe2Jpeg extends Transform {
         }
         eoi = chunk.indexOf(_EOI, pos);
         if (eoi !== -1) {
-          this._markerSplit = false;
-          this._findStart = true;
           pos = eoi + 2;
           if (this._size) {
-            const cropped = chunk.subarray(0, pos);
+            const cropped = pos === chunkLen ? chunk : chunk.subarray(0, pos);
             this._chunks.push(cropped);
             this._size += cropped.length;
             this._jpeg = Buffer.concat(this._chunks, this._size);
@@ -129,15 +127,17 @@ class Pipe2Jpeg extends Transform {
             this._size = 0;
             this._chunks = [];
           } else {
-            this._jpeg = chunk.subarray(soi, pos);
+            this._jpeg = soi === 0 && pos === chunkLen ? chunk : chunk.subarray(soi, pos);
             this._sendJpeg();
           }
+          this._markerSplit = false;
+          this._findStart = true;
           if (pos === chunkLen) {
             break;
           }
           continue;
         }
-        const cropped = chunk.subarray(soi !== -1 ? soi : 0);
+        const cropped = soi <= 0 ? chunk : chunk.subarray(soi);
         this._chunks.push(cropped);
         this._size += cropped.length;
         this._markerSplit = chunk[chunkLen - 1] === _EOI[0];
