@@ -1,6 +1,6 @@
 # pipe2jpeg
 ###### [![Buy me a coffee](https://img.shields.io/badge/-buy%20me%20a%20coffee-red?logo=buy%20me%20a%20coffee)](https://buymeacoffee.com/kevinGodell) [![build](https://github.com/kevinGodell/pipe2jpeg/actions/workflows/node.js.yml/badge.svg)](https://github.com/kevinGodell/pipe2jpeg/actions/workflows/node.js.yml) [![Build status](https://ci.appveyor.com/api/projects/status/jbqs74nnvc1x7v9u/branch/master?svg=true)](https://ci.appveyor.com/project/kevinGodell/pipe2jpeg/branch/master) [![GitHub issues](https://img.shields.io/github/issues/kevinGodell/pipe2jpeg.svg)](https://github.com/kevinGodell/pipe2jpeg/issues) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/kevinGodell/pipe2jpeg/master/LICENSE)  [![npm](https://img.shields.io/npm/dt/pipe2jpeg.svg?style=flat-square)](https://www.npmjs.com/package/pipe2jpeg)
-Parse individual jpegs from an ffmpeg pipe when output codec(**-c:v**) is set to ***mjpeg*** and format(**-f**) is set to ***image2pipe***, ***singlejpeg***, ***mjpeg***, or ***mpjpeg***. All jpegs will be found regardless of size or fps. See [testing](https://www.npmjs.com/package/pipe2jpeg#testing) instructions for verification.
+Parse individual jpegs from an ffmpeg pipe when the output codec(**-c:v**) is set to ***mjpeg*** and the format(**-f**) is set to ***image2pipe***, ***singlejpeg***, ***mjpeg***, or ***mpjpeg***.
 ### installation:
 ```
 npm install pipe2jpeg --save
@@ -10,7 +10,7 @@ The following [example](https://github.com/kevinGodell/pipe2jpeg/blob/master/exa
 ```javascript
 const Pipe2Jpeg = require('pipe2jpeg');
 
-const spawn = require('child_process').spawn;
+const { spawn } = require('child_process');
 
 let jpegCounter = 0;
 
