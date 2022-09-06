@@ -1,8 +1,8 @@
 'use strict';
 
-const P2J = require('..');
+const Pipe2Jpeg = require('..');
 
-const spawn = require('child_process').spawn;
+const { spawn } = require('child_process');
 
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 
@@ -11,39 +11,42 @@ let jpegCounter = 0;
 const params = [
   /* log info to console */
   '-loglevel',
-  'quiet',
+  'error',
+  '-nostats',
 
   /* use an artificial video input */
   '-re',
   '-f',
   'lavfi',
   '-i',
-  'testsrc=size=1920x1080:rate=15',
+  'testsrc=size=320x240:rate=25',
 
   /* set output flags */
   '-an',
   '-c:v',
   'mjpeg',
   '-pix_fmt',
-  'yuvj422p',
+  'yuvj420p', // yuvj420p, yuvj422p, yuvj444p
   '-f',
   'image2pipe', // image2pipe, singlejpeg, mjpeg, or mpjpeg
   '-vf',
-  'fps=1,scale=640:360',
+  'fps=25,scale=500:500', // 'fps=1,scale=640:360',
   '-q',
-  '1',
+  '31', // 2 - 31
+  '-huffman',
+  '1', // 0 - 1
   '-frames',
   '100',
-  'pipe:1'
+  'pipe:1',
 ];
 
-const p2j = new P2J();
+const p2j = new Pipe2Jpeg();
 
 p2j.on('jpeg', jpeg => {
   console.log('received jpeg', ++jpegCounter, jpeg.length);
 });
 
-const ffmpeg = spawn(ffmpegPath, params, { stdio: ['ignore', 'pipe', 'ignore'] });
+const ffmpeg = spawn(ffmpegPath, params, { stdio: ['ignore', 'pipe', 'inherit'] });
 
 ffmpeg.on('error', error => {
   console.log(error);

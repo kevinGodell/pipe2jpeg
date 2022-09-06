@@ -2,8 +2,10 @@
 
 const { Transform } = require('stream');
 
-const _SOI = Buffer.from([0xff, 0xd8]); // jpeg start of image ff08
-const _EOI = Buffer.from([0xff, 0xd9]); // jpeg end of image ff09
+const { deprecate } = require('util');
+
+const _SOI = Buffer.from([0xff, 0xd8]); // jpeg start of image ffd8
+const _EOI = Buffer.from([0xff, 0xd9]); // jpeg end of image ffd9
 
 /**
  * @fileOverview Creates a stream transform for parsing piped jpegs from ffmpeg.
@@ -19,6 +21,14 @@ class Pipe2Jpeg extends Transform {
     super(options);
     this._chunks = [];
     this._size = 0;
+    this._byteOffset = 200;
+    this._markerSplit = false;
+    this._findStart = true;
+    this.on('newListener', event => {
+      if (event === 'jpeg') {
+        deprecate(() => {}, '"jpeg" event will be removed in version 0.4.0. Please use "data" event.')();
+      }
+    });
   }
 
   /**
@@ -51,10 +61,8 @@ class Pipe2Jpeg extends Transform {
    */
   _sendJpeg() {
     this._timestamp = Date.now();
-    if (this._readableState.pipesCount > 0) {
-      this.push(this._jpeg);
-    }
     this.emit('jpeg', this._jpeg);
+    this.emit('data', this._jpeg);
   }
 
   /**
@@ -65,50 +73,75 @@ class Pipe2Jpeg extends Transform {
    * @private
    */
   _transform(chunk, encoding, callback) {
-    const chunkLength = chunk.length;
+    const chunkLen = chunk.length;
     let pos = 0;
+    let soi = -1;
+    let eoi = -1;
     while (true) {
-      if (this._size) {
-        const eoi = chunk.indexOf(_EOI);
-        if (eoi === -1) {
-          this._chunks.push(chunk);
-          this._size += chunkLength;
-          break;
-        } else {
-          pos = eoi + 2;
-          const sliced = chunk.slice(0, pos);
-          this._chunks.push(sliced);
-          this._size += sliced.length;
-          this._jpeg = Buffer.concat(this._chunks, this._size);
-          this._chunks = [];
-          this._size = 0;
-          this._sendJpeg();
-          if (pos === chunkLength) {
-            break;
-          }
+      if (this._findStart === true) {
+        // searching for soi
+        if (this._markerSplit === true && chunk[0] === _SOI[1]) {
+          pos = 1 + this._byteOffset;
+          this._chunks.push(_SOI.subarray(0, 1));
+          this._size = 1;
+          this._findStart = false;
+          this._markerSplit = false;
+          continue;
         }
+        soi = chunk.indexOf(_SOI, pos);
+        if (soi !== -1) {
+          pos = soi + 2 + this._byteOffset;
+          this._findStart = false;
+          this._markerSplit = false;
+          continue;
+        }
+        this._markerSplit = chunk[chunkLen - 1] === _SOI[0];
+        break;
       } else {
-        const soi = chunk.indexOf(_SOI, pos);
-        if (soi === -1) {
-          break;
-        } else {
-          // todo might add option or take sample average / 2 to jump position for small gain
-          pos = soi + 500;
-        }
-        const eoi = chunk.indexOf(_EOI, pos);
-        if (eoi === -1) {
-          const sliced = chunk.slice(soi);
-          this._chunks = [sliced];
-          this._size = sliced.length;
-          break;
-        } else {
-          pos = eoi + 2;
-          this._jpeg = chunk.slice(soi, pos);
+        // searching for eoi
+        if (this._markerSplit === true && chunk[0] === _EOI[1]) {
+          pos = 1;
+          const cropped = pos === chunkLen ? chunk : chunk.subarray(0, pos);
+          this._chunks.push(cropped);
+          this._size += cropped.length;
+          this._jpeg = Buffer.concat(this._chunks, this._size);
           this._sendJpeg();
-          if (pos === chunkLength) {
+          this._size = 0;
+          this._chunks = [];
+          this._markerSplit = false;
+          this._findStart = true;
+          if (pos === chunkLen) {
             break;
           }
+          continue;
         }
+        eoi = chunk.indexOf(_EOI, pos);
+        if (eoi !== -1) {
+          pos = eoi + 2;
+          if (this._size) {
+            const cropped = pos === chunkLen ? chunk : chunk.subarray(0, pos);
+            this._chunks.push(cropped);
+            this._size += cropped.length;
+            this._jpeg = Buffer.concat(this._chunks, this._size);
+            this._sendJpeg();
+            this._size = 0;
+            this._chunks = [];
+          } else {
+            this._jpeg = soi === 0 && pos === chunkLen ? chunk : chunk.subarray(soi, pos);
+            this._sendJpeg();
+          }
+          this._markerSplit = false;
+          this._findStart = true;
+          if (pos === chunkLen) {
+            break;
+          }
+          continue;
+        }
+        const cropped = soi <= 0 ? chunk : chunk.subarray(soi);
+        this._chunks.push(cropped);
+        this._size += cropped.length;
+        this._markerSplit = chunk[chunkLen - 1] === _EOI[0];
+        break;
       }
     }
     callback();
@@ -120,6 +153,8 @@ class Pipe2Jpeg extends Transform {
   resetCache() {
     this._chunks = [];
     this._size = 0;
+    this._markerSplit = false;
+    this._findStart = true;
     delete this._jpeg;
     delete this._timestamp;
   }

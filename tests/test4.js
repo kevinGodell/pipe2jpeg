@@ -4,11 +4,17 @@ console.time('==========> single jpeg packed into single piped chunk');
 
 const assert = require('assert');
 
-const P2J = require('..');
+const { Writable } = require('stream');
+
+const Pipe2Jpeg = require('..');
+
+const soi = Buffer.from([0xff, 0xd8]);
+
+const eoi = Buffer.from([0xff, 0xd9]);
 
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 
-const spawn = require('child_process').spawn;
+const { spawn } = require('child_process');
 
 const jpegCount = 10;
 
@@ -21,8 +27,8 @@ let jpegCounter = 0;
 const params = [
   /* log info to console */
   '-loglevel',
-  'quiet',
-  '-stats',
+  'error',
+  '-nostats',
 
   /* use an artificial video input */
   '-re',
@@ -45,19 +51,24 @@ const params = [
   '1',
   '-frames',
   jpegCount,
-  'pipe:1'
+  'pipe:1',
 ];
 
-const p2j = new P2J();
+const p2j = new Pipe2Jpeg();
 
-p2j.on('jpeg', jpeg => {
+const myStream = new Writable();
+
+myStream._write = (jpeg, encoding, callback) => {
   jpegCounter++;
   const length = jpeg.length;
   assert(jpeg[0] === 0xff, 'jpeg[0] not equal to 0xFF');
   assert(jpeg[1] === 0xd8, 'jpeg[1] not equal to 0xD8');
   assert(jpeg[length - 2] === 0xff, 'jpeg[length - 1] not equal to 0xFF');
   assert(jpeg[length - 1] === 0xd9, 'jpeg[length - 1] not equal to 0xD9');
-});
+  assert(jpeg.indexOf(soi) === jpeg.lastIndexOf(soi));
+  assert(jpeg.indexOf(eoi) === jpeg.lastIndexOf(eoi));
+  callback();
+};
 
 const ffmpeg = spawn(ffmpegPath, params, { stdio: ['ignore', 'pipe', 'inherit'] });
 
@@ -72,3 +83,5 @@ ffmpeg.on('exit', (code, signal) => {
 });
 
 ffmpeg.stdout.pipe(p2j);
+
+p2j.pipe(myStream);

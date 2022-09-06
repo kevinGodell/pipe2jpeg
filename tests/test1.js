@@ -1,6 +1,6 @@
 'use strict';
 
-console.time('==========> multiple jpegs packed into single piped chunk');
+console.time('==========> single jpeg packed into single piped chunk');
 
 const assert = require('assert');
 
@@ -16,7 +16,7 @@ const { spawn } = require('child_process');
 
 const jpegCount = 10;
 
-const fps = 100;
+const fps = 1;
 
 const scale = 1 / 50;
 
@@ -65,6 +65,10 @@ p2j.on('data', jpeg => {
   assert(jpeg.indexOf(eoi) === jpeg.lastIndexOf(eoi));
 });
 
+/* p2j.on('data', data => {
+  console.log(data);
+});*/
+
 const ffmpeg = spawn(ffmpegPath, params, { stdio: ['ignore', 'pipe', 'inherit'] });
 
 ffmpeg.on('error', error => {
@@ -74,7 +78,7 @@ ffmpeg.on('error', error => {
 ffmpeg.on('exit', (code, signal) => {
   assert(code === 0, `FFMPEG exited with code ${code} and signal ${signal}`);
   assert(jpegCounter === jpegCount, `did not get ${jpegCount} jpegs`);
-  console.timeEnd('==========> multiple jpegs packed into single piped chunk');
+  console.timeEnd('==========> single jpeg packed into single piped chunk');
 });
 
 ffmpeg.stdout.pipe(p2j);
