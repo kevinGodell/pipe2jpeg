@@ -32,7 +32,7 @@ class Pipe2Jpeg extends Transform {
         deprecate(() => {}, '"jpeg" event will be removed in version 0.4.0. Please use "data" event.')();
       }
     });
-    if (this.readableObjectMode === true) {
+    if (options.readableObjectMode === true) {
       if (options.bufferConcat === true) {
         this._sendJpeg = this._sendJpegBufferObject;
       } else {
