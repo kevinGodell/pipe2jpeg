@@ -46,7 +46,7 @@ p2j.on('data', jpeg => {
   assert(jpeg.indexOf(eoi) === jpeg.lastIndexOf(eoi));
 });
 
-console.time('Pipe2jpeg');
+console.time('pipe2jpeg');
 
 // each iteration pushes 11 fake jpegs
 for (let i = 0; i < iterations; ++i) {
@@ -63,7 +63,7 @@ for (let i = 0; i < iterations; ++i) {
 }
 
 process.on('exit', code => {
-  console.timeEnd('Pipe2jpeg');
+  console.timeEnd('pipe2jpeg');
   console.log({ totalJpegs, iterations });
   assert(totalJpegs === iterations * 11);
   console.log('exit', { code });
