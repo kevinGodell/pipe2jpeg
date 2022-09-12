@@ -37,7 +37,7 @@ const p2j = new Pipe2Jpeg({ readableObjectMode: true });
 p2j.on('data', ({ list, totalLength }) => {
   ++totalJpegs;
   // verify size, soi, and eoi
-  assert(totalLength === size * 75, `${totalLength} !== ${size * 75}`);
+  assert(totalLength === size * 30, `${totalLength} !== ${size * 30}`);
   // assert(jpeg.indexOf(soi) === jpeg.lastIndexOf(soi));
   // assert(jpeg.indexOf(eoi) === jpeg.lastIndexOf(eoi));
 });
@@ -47,7 +47,7 @@ console.time('pipe2jpeg');
 // each iteration pushes 1 fake jpegs
 for (let i = 0; i < iterations; ++i) {
   p2j.write(buf1); // + 0.5                  0.5
-  for (let i = 0; i < 74; ++i) {
+  for (let i = 0; i < 29; ++i) {
     p2j.write(filler); // + 0                0.5
   }
   p2j.write(buf2); // + 0.5                  1.0
