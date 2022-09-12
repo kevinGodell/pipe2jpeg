@@ -6,7 +6,7 @@ Parse individual jpegs from an ffmpeg pipe when the output codec(**-c:v**) is se
 npm install pipe2jpeg --save
 ```
 ### usage:
-The following [example](https://github.com/kevinGodell/pipe2jpeg/blob/master/examples/example.js) uses ffmpeg's **testsrc** to simulate a video input and generate 100 downscaled jpeg images at a rate of 1 per second. The jpeg images are piped in from ffmpeg's stdout and parsed for the start of image(SOI) and end of image(EOI) file markers. Pipe2Jpeg dispatches a "data" event that contains a complete jpeg image:
+The following example uses ffmpeg's **testsrc** to simulate a video input and generate 100 downscaled jpeg images at a rate of 1 per second. The jpeg images are piped in from ffmpeg's stdout and parsed for the start of image(SOI) and end of image(EOI) file markers. Using the default configuration, Pipe2Jpeg dispatches a "data" event that contains a complete jpeg image buffer. For more configuration options, view the [docs](https://kevingodell.github.io/pipe2jpeg/Pipe2Jpeg.html).
 ```javascript
 const Pipe2Jpeg = require('pipe2jpeg');
 
