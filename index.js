@@ -22,8 +22,8 @@ class Pipe2Jpeg extends Transform {
   constructor(options) {
     options = options && typeof options === 'object' ? options : {};
     super({ readableObjectMode: options.readableObjectMode === true });
-    this._list = [];
-    this._totalLength = 0;
+    this._buffers = [];
+    this._size = 0;
     this._byteOffset = 200;
     this._markerSplit = false;
     this._findStart = true;
@@ -45,12 +45,16 @@ class Pipe2Jpeg extends Transform {
 
   /**
    * @readonly
-   * @property {Array} list
-   * - Returns a reference to the array of buffers.
-   * @returns {Array}
+   * @property {Array|Null} list
+   * - Returns the latest Jpeg as an array of buffers.
+   * <br/>
+   * - Returns <b>Null</b> unless readableObjectMode is true and bufferConcat is false.
+   * <br/>
+   * - Returns <b>Null</b> if requested before first Jpeg parsed from stream.
+   * @returns {Array|Null}
    */
   get list() {
-    return this._list || [];
+    return this._list || null;
   }
 
   /**
@@ -94,7 +98,7 @@ class Pipe2Jpeg extends Transform {
    * @private
    */
   _sendJpegBuffer() {
-    this._jpeg = this._list.length > 1 ? Buffer.concat(this._list, this._totalLength) : this._list[0];
+    this._jpeg = this._buffers.length > 1 ? Buffer.concat(this._buffers, this._size) : this._buffers[0];
     this.emit('data', this._jpeg);
     // support deprecated jpeg event until 0.4.0
     this.emit('jpeg', this._jpeg);
@@ -105,7 +109,7 @@ class Pipe2Jpeg extends Transform {
    * @private
    */
   _sendJpegBufferObject() {
-    this._jpeg = this._list.length > 1 ? Buffer.concat(this._list, this._totalLength) : this._list[0];
+    this._jpeg = this._buffers.length > 1 ? Buffer.concat(this._buffers, this._size) : this._buffers[0];
     this.emit('data', { jpeg: this._jpeg });
   }
 
@@ -114,14 +118,19 @@ class Pipe2Jpeg extends Transform {
    * @private
    */
   _sendJpegListObject() {
+    this._list = this._buffers;
+    this._totalLength = this._size;
     this.emit('data', { list: this._list, totalLength: this._totalLength });
   }
 
   /**
    *
+   * @param {Buffer} chunk
+   * @param {Number} pos
+   * @returns {{foundEOI:boolean,newPos:number}}
    * @private
    */
-  _findEOI(pos, chunk) {
+  _findEOI(chunk, pos) {
     if (this._markerSplit === true && chunk[0] === _EOI[1]) {
       return { foundEOI: true, newPos: 1 };
     }
@@ -148,8 +157,8 @@ class Pipe2Jpeg extends Transform {
         // searching for soi
         if (this._markerSplit === true && chunk[0] === _SOI[1]) {
           pos = 1 + this._byteOffset;
-          this._list = [_SOI.subarray(0, 1)];
-          this._totalLength = 1;
+          this._buffers = [_SOI.subarray(0, 1)];
+          this._size = 1;
           this._findStart = this._markerSplit = false;
           continue;
         }
@@ -163,17 +172,17 @@ class Pipe2Jpeg extends Transform {
         break;
       } else {
         // searching for eoi
-        const { foundEOI, newPos } = this._findEOI(pos, chunk);
+        const { foundEOI, newPos } = this._findEOI(chunk, pos);
         if (foundEOI === true) {
           this._timestamp = Date.now();
           pos = newPos;
           const endOfBuf = pos === chunkLen;
-          const cropped = (this._totalLength > 0 || soi === 0) && endOfBuf === true ? chunk : chunk.subarray(soi, pos);
-          this._list.push(cropped);
-          this._totalLength += cropped.length;
+          const cropped = (this._size > 0 || soi === 0) && endOfBuf === true ? chunk : chunk.subarray(soi, pos);
+          this._buffers.push(cropped);
+          this._size += cropped.length;
           this._sendJpeg();
-          this._list = [];
-          this._totalLength = 0;
+          this._buffers = [];
+          this._size = 0;
           this._markerSplit = false;
           this._findStart = true;
           if (endOfBuf) {
@@ -182,8 +191,8 @@ class Pipe2Jpeg extends Transform {
           continue;
         }
         const cropped = soi === 0 ? chunk : chunk.subarray(soi);
-        this._list.push(cropped);
-        this._totalLength += cropped.length;
+        this._buffers.push(cropped);
+        this._size += cropped.length;
         this._markerSplit = chunk[chunkLen - 1] === _EOI[0];
         break;
       }
@@ -195,10 +204,12 @@ class Pipe2Jpeg extends Transform {
    * Clear cached values.
    */
   resetCache() {
-    this._list = [];
-    this._totalLength = 0;
+    this._buffers = [];
+    this._size = 0;
     this._markerSplit = false;
     this._findStart = true;
+    delete this._totalLength;
+    delete this._list;
     delete this._jpeg;
     delete this._timestamp;
   }
