@@ -2,6 +2,8 @@
 
 const assert = require('assert');
 
+const { basename } = require('path');
+
 const Pipe2jpeg = require('..');
 
 const soi = Buffer.from([0xff, 0xd8]);
@@ -46,7 +48,9 @@ p2j.on('data', jpeg => {
   assert(jpeg.indexOf(eoi) === jpeg.lastIndexOf(eoi));
 });
 
-console.time('pipe2jpeg');
+const consoleTime = basename(__filename);
+
+console.time(consoleTime);
 
 // each iteration pushes 11 fake jpegs
 for (let i = 0; i < iterations; ++i) {
@@ -63,7 +67,7 @@ for (let i = 0; i < iterations; ++i) {
 }
 
 process.on('exit', code => {
-  console.timeEnd('pipe2jpeg');
+  console.timeEnd(consoleTime);
   console.log({ totalJpegs, iterations });
   assert(totalJpegs === iterations * 11);
   console.log('exit', { code });
