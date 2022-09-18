@@ -33,7 +33,7 @@ const params = [
   '-pix_fmt',
   'yuvj422p',
   '-f',
-  'image2pipe',//image2pipe, singlejpeg, mjpeg, or mpjpeg
+  'image2pipe', // image2pipe, singlejpeg, mjpeg, or mpjpeg
   '-vf',
   'fps=1,scale=640:360',
   '-q',
@@ -60,6 +60,34 @@ ffmpeg.on('exit', (code, signal) => {
 });
 
 ffmpeg.stdout.pipe(p2j);
+```
+Setting **readableObjectMode** to true will cause the output to be an object containing **list** and **totalLength** properties:
+```javascript
+const p2j = new Pipe2Jpeg({ readableObjectMode: true /* default false */ });
+
+p2j.on('data', ({ list, totalLength }) => {
+  // list is array of buffers comprising the jpeg
+  console.log(Array.isArray(list), Buffer.isBuffer(list[0]));
+  // totalLength is cumulative size of buffers in list
+  console.log(Number.isInteger(totalLength));
+  // list of buffers can be concatenated as needed
+  const jpeg = Buffer.concat(list, totalLength);
+});
+
+// the list property will be set with the latest value
+const list = p2j.list;
+```
+While **readableObjectMode** is set to true, **bufferConcat** can be set to true to cause the list of buffers to be concatenated into a single buffer:
+```javascript
+const p2j = new Pipe2Jpeg({ readableObjectMode: true /* default false */, bufferConcat: true /* default false */ });
+
+p2j.on('data', ({ jpeg }) => {
+  // jpeg is complete as a single buffer
+  console.log(Buffer.isBuffer(jpeg));
+});
+
+// the jpeg property will be set with the latest value
+const jpeg = p2j.jpeg;
 ```
 ### testing:
 Clone the repository
