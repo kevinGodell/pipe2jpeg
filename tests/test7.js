@@ -52,12 +52,12 @@ let totalJpegs = 0;
 
 const iterations = 100000;
 
-const p2j = new Pipe2Jpeg();
+const p2j = new Pipe2Jpeg({ readableObjectMode: true });
 
-p2j.on('data', jpeg => {
+p2j.on('data', ({ list, totalLength }) => {
   ++totalJpegs;
   // verify size, soi, and eoi
-  assert(jpeg.length === size, `${jpeg.length} !== ${size}`);
+  assert(totalLength === size, `${totalLength} !== ${size}`);
   // assert(jpeg.indexOf(soi) === jpeg.lastIndexOf(soi));
   // assert(jpeg.indexOf(eoi) === jpeg.lastIndexOf(eoi));
 });

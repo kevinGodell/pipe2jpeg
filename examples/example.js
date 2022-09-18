@@ -42,7 +42,7 @@ const params = [
 
 const p2j = new Pipe2Jpeg();
 
-p2j.on('jpeg', jpeg => {
+p2j.on('data', jpeg => {
   console.log('received jpeg', ++jpegCounter, jpeg.length);
 });
 

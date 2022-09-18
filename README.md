@@ -6,7 +6,7 @@ Parse individual jpegs from an ffmpeg pipe when the output codec(**-c:v**) is se
 npm install pipe2jpeg --save
 ```
 ### usage:
-The following [example](https://github.com/kevinGodell/pipe2jpeg/blob/master/examples/example.js) uses ffmpeg's **testsrc** to simulate a video input and generate 100 downscaled jpeg images at a rate of 1 per second. The jpeg images are piped in from ffmpeg's stdout and parsed for the start of image(SOI) and end of image(EOI) file markers. Pipe2Jpeg dispatches a "data" event that contains a complete jpeg image:
+The following example uses ffmpeg's **testsrc** to simulate a video input and generate 100 downscaled jpeg images at a rate of 1 per second. The jpeg images are piped in from ffmpeg's stdout and parsed for the start of image(SOI) and end of image(EOI) file markers. Using the default configuration, Pipe2Jpeg dispatches a "data" event that contains a complete jpeg image buffer. For more configuration options, view the [docs](https://kevingodell.github.io/pipe2jpeg/Pipe2Jpeg.html).
 ```javascript
 const Pipe2Jpeg = require('pipe2jpeg');
 
@@ -33,7 +33,7 @@ const params = [
   '-pix_fmt',
   'yuvj422p',
   '-f',
-  'image2pipe',//image2pipe, singlejpeg, mjpeg, or mpjpeg
+  'image2pipe', // image2pipe, singlejpeg, mjpeg, or mpjpeg
   '-vf',
   'fps=1,scale=640:360',
   '-q',
@@ -60,6 +60,34 @@ ffmpeg.on('exit', (code, signal) => {
 });
 
 ffmpeg.stdout.pipe(p2j);
+```
+Setting **readableObjectMode** to true will cause the output to be an object containing **list** and **totalLength** properties:
+```javascript
+const p2j = new Pipe2Jpeg({ readableObjectMode: true /* default false */ });
+
+p2j.on('data', ({ list, totalLength }) => {
+  // list is array of buffers comprising the jpeg
+  console.log(Array.isArray(list), Buffer.isBuffer(list[0]));
+  // totalLength is cumulative size of buffers in list
+  console.log(Number.isInteger(totalLength));
+  // list of buffers can be concatenated as needed
+  const jpeg = Buffer.concat(list, totalLength);
+});
+
+// the list property will be set with the latest value
+const list = p2j.list;
+```
+While **readableObjectMode** is set to true, **bufferConcat** can be set to true to cause the list of buffers to be concatenated into a single buffer:
+```javascript
+const p2j = new Pipe2Jpeg({ readableObjectMode: true /* default false */, bufferConcat: true /* default false */ });
+
+p2j.on('data', ({ jpeg }) => {
+  // jpeg is complete as a single buffer
+  console.log(Buffer.isBuffer(jpeg));
+});
+
+// the jpeg property will be set with the latest value
+const jpeg = p2j.jpeg;
 ```
 ### testing:
 Clone the repository
