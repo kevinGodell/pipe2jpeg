@@ -15,7 +15,7 @@
   "scripts": {
     "start": "node examples/example.js",
     "dev": "./node_modules/.bin/nodemon examples/example.js",
-    "test": "node tests/test1.js && node tests/test2.js && node tests/test3.js && node tests/test4.js && node tests/test5.js && node tests/test6.js && node tests/test7.js && node tests/test8.js && node tests/test9.js && node tests/test10.js && node tests/test11.js",
+    "test": "node tests/test1.js && node tests/test2.js && node tests/test3.js && node tests/test4.js && node tests/test5.js && node tests/test6.js && node tests/test7.js && node tests/test8.js && node tests/test9.js && node tests/test10.js && node tests/test11.js && node tests/test12.js && node tests/test13.js && node tests/test14.js",
     "preversion": "npm test",
     "postversion": "npm run doc",
     "pack": "npm --verbose pack",

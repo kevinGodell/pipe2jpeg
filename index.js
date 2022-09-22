@@ -16,7 +16,8 @@ class Pipe2Jpeg extends Transform {
    *
    * @param {Object} [options]
    * @param {Boolean} [options.readableObjectMode=false] - If true, output will be an object instead of a buffer.
-   * @param {Boolean} [options.bufferConcat=false] - If true, concatenate array of buffers before output. (readableObjectMode must be true to have any effect)
+   * @param {Boolean} [options.bufferConcat=false] - If true, concatenate array of buffers before output. <br/>(readableObjectMode must be true to have any effect)
+   * @param {Number} [options.byteOffset=200] - Number of bytes to skip when searching for EOI. <br/>Default: 200, Min: 0, Max: 1000000
    * @returns {Pipe2Jpeg}
    */
   constructor(options) {
@@ -32,6 +33,7 @@ class Pipe2Jpeg extends Transform {
         deprecate(() => {}, '"jpeg" event will be removed in version 0.4.0. Please use "data" event.')();
       }
     });
+    this.byteOffset = options.byteOffset;
     if (options.readableObjectMode === true) {
       if (options.bufferConcat === true) {
         this._sendJpeg = this._sendJpegBufferObject;
@@ -41,6 +43,17 @@ class Pipe2Jpeg extends Transform {
     } else {
       this._sendJpeg = this._sendJpegBuffer;
     }
+  }
+
+  /**
+   * @type {Number}
+   */
+  get byteOffset() {
+    return this._byteOffset;
+  }
+
+  set byteOffset(n) {
+    this._byteOffset = Pipe2Jpeg._valInt(n, 200, 0, 1000000);
   }
 
   /**
@@ -171,24 +184,25 @@ class Pipe2Jpeg extends Transform {
         this._markerSplit = chunk[chunkLen - 1] === _SOI[0];
         break;
       } else {
-        // searching for eoi
-        const { foundEOI, newPos } = this._findEOI(chunk, pos);
-        if (foundEOI === true) {
-          this._timestamp = Date.now();
-          pos = newPos;
-          const endOfBuf = pos === chunkLen;
-          const cropped = (this._size > 0 || soi === 0) && endOfBuf === true ? chunk : chunk.subarray(soi, pos);
-          this._buffers.push(cropped);
-          this._size += cropped.length;
-          this._sendJpeg();
-          this._buffers = [];
-          this._size = 0;
-          this._markerSplit = false;
-          this._findStart = true;
-          if (endOfBuf) {
-            break;
+        if (this._size + chunkLen >= this._byteOffset) {
+          const { foundEOI, newPos } = this._findEOI(chunk, pos);
+          if (foundEOI === true) {
+            this._timestamp = Date.now();
+            pos = newPos;
+            const endOfBuf = pos === chunkLen;
+            const cropped = (this._size > 0 || soi === 0) && endOfBuf === true ? chunk : chunk.subarray(soi, pos);
+            this._buffers.push(cropped);
+            this._size += cropped.length;
+            this._sendJpeg();
+            this._buffers = [];
+            this._size = 0;
+            this._markerSplit = false;
+            this._findStart = true;
+            if (endOfBuf) {
+              break;
+            }
+            continue;
           }
-          continue;
         }
         const cropped = soi === 0 ? chunk : chunk.subarray(soi);
         this._buffers.push(cropped);
@@ -212,6 +226,21 @@ class Pipe2Jpeg extends Transform {
     delete this._list;
     delete this._jpeg;
     delete this._timestamp;
+  }
+
+  /**
+   * Validate integer is in range.
+   * @param {*} n
+   * @param {Number} def
+   * @param {Number} min
+   * @param {Number} max
+   * @returns {Number}
+   * @private
+   * @static
+   */
+  static _valInt(n, def, min, max) {
+    n = Number.parseInt(n);
+    return Number.isNaN(n) ? def : n < min ? min : n > max ? max : n;
   }
 }
 
