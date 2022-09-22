@@ -34,7 +34,24 @@ let totalJpegs = 0;
 
 const iterations = 100000;
 
-const p2j = new Pipe2Jpeg({ byteOffset: 8192 * 30 * 0.75 });
+const p2j = new Pipe2Jpeg({ byteOffset: 500 });
+
+let samples = [];
+
+const calcByteOffset = jpeg => {
+  samples.push(jpeg.length);
+  if (samples.length === 10) {
+    let average = 0;
+    samples.forEach(sampleSize => {
+      average += sampleSize;
+    });
+    average = average / 10;
+    p2j.byteOffset = average * 0.75;
+    p2j.off('data', calcByteOffset);
+  }
+};
+
+p2j.on('data', calcByteOffset);
 
 p2j.on('data', jpeg => {
   ++totalJpegs;
