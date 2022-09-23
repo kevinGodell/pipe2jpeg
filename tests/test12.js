@@ -47,7 +47,7 @@ const calcByteOffset = jpeg => {
     });
     average = average / 10;
     p2j.byteOffset = average * 0.75;
-    p2j.off('data', calcByteOffset);
+    p2j.removeListener('data', calcByteOffset);
   }
 };
 
