@@ -8,7 +8,7 @@ const _SOI = Buffer.from([0xff, 0xd8]); // jpeg start of image ffd8
 const _EOI = Buffer.from([0xff, 0xd9]); // jpeg end of image ffd9
 
 /**
- * @fileOverview Creates a stream transform for parsing piped jpegs from ffmpeg.
+ * @fileOverview Creates a stream transform for parsing piped JPEGs from [FFmpeg]{@link https://ffmpeg.org/}.
  * @requires stream.Transform
  */
 class Pipe2Jpeg extends Transform {
@@ -46,7 +46,10 @@ class Pipe2Jpeg extends Transform {
   }
 
   /**
-   * @type {Number}
+   * @property {Number} byteOffset
+   * - Number of bytes to skip when searching for EOI.
+   * <br/>
+   * - Default: 200, Min: 0, Max: 1000000.
    */
   get byteOffset() {
     return this._byteOffset;
@@ -59,11 +62,11 @@ class Pipe2Jpeg extends Transform {
   /**
    * @readonly
    * @property {Array|Null} list
-   * - Returns the latest Jpeg as an array of buffers.
+   * - Returns the latest JPEG as an array of buffers.
    * <br/>
    * - Returns <b>Null</b> unless readableObjectMode is true and bufferConcat is false.
    * <br/>
-   * - Returns <b>Null</b> if requested before first Jpeg parsed from stream.
+   * - Returns <b>Null</b> if requested before first JPEG parsed from stream.
    * @returns {Array|Null}
    */
   get list() {
@@ -83,11 +86,11 @@ class Pipe2Jpeg extends Transform {
   /**
    * @readonly
    * @property {Buffer|Null} jpeg
-   * - Returns the latest Jpeg as a buffer.
+   * - Returns the latest JPEG as a single buffer.
    * <br/>
    * - Returns <b>Null</b> if readableObjectMode is true and bufferConcat is false.
    * <br/>
-   * - Returns <b>Null</b> if requested before first Jpeg parsed from stream.
+   * - Returns <b>Null</b> if requested before first JPEG parsed from stream.
    * @returns {Buffer|Null}
    */
   get jpeg() {
@@ -97,9 +100,9 @@ class Pipe2Jpeg extends Transform {
   /**
    * @readonly
    * @property {Number} timestamp
-   * - Returns the timestamp of the latest Jpeg as an Integer(milliseconds).
+   * - Returns the timestamp of the latest JPEG as an Integer(milliseconds).
    * <br/>
-   * - Returns <b>-1</b> if requested before first Jpeg is parsed from stream.
+   * - Returns <b>-1</b> if requested before first JPEG is parsed from stream.
    * @returns {Number}
    */
   get timestamp() {
