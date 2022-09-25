@@ -89,6 +89,10 @@ p2j.on('data', ({ jpeg }) => {
 // the jpeg property will be set with the latest value
 const jpeg = p2j.jpeg;
 ```
+If you have consistently sized jpegs, then setting **byteOffset** to a number approximately 75% of the expected size can minimize the time searching for EOI and result in a small performance gain:
+```javascript
+const p2j = new Pipe2Jpeg({ byteOffset: 10000 /* default 200 */ });
+```
 ### testing:
 Clone the repository
 ```

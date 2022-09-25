@@ -210,7 +210,46 @@
                 </td>
             
 
-            <td class="description last">If true, concatenate array of buffers before output. (readableObjectMode must be true to have any effect)</td>
+            <td class="description last">If true, concatenate array of buffers before output. <br/>(readableObjectMode must be true to have any effect)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>byteOffset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    200
+                
+                </td>
+            
+
+            <td class="description last">Number of bytes to skip when searching for EOI. <br/>Default: 200, Min: 0, Max: 1000000</td>
         </tr>
 
     
@@ -326,6 +365,118 @@
 
         
             
+<h4 class="name" id="byteOffset"><span class="type-signature"></span>byteOffset<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>byteOffset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">- Number of bytes to skip when searching for EOI.
+<br/>
+- Default: 200, Min: 0, Max: 1000000.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line52">line 52</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
 <h4 class="name" id="jpeg"><span class="type-signature">(readonly) </span>jpeg<span class="type-signature"></span></h4>
 
 
@@ -382,11 +533,11 @@
 
             
 
-            <td class="description last">- Returns the latest Jpeg as a buffer.
+            <td class="description last">- Returns the latest JPEG as a single buffer.
 <br/>
 - Returns <b>Null</b> if readableObjectMode is true and bufferConcat is false.
 <br/>
-- Returns <b>Null</b> if requested before first Jpeg parsed from stream.</td>
+- Returns <b>Null</b> if requested before first JPEG parsed from stream.</td>
         </tr>
 
     
@@ -425,7 +576,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line80">line 80</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line94">line 94</a>
     </li></ul></dd>
     
 
@@ -499,11 +650,11 @@
 
             
 
-            <td class="description last">- Returns the latest Jpeg as an array of buffers.
+            <td class="description last">- Returns the latest JPEG as an array of buffers.
 <br/>
 - Returns <b>Null</b> unless readableObjectMode is true and bufferConcat is false.
 <br/>
-- Returns <b>Null</b> if requested before first Jpeg parsed from stream.</td>
+- Returns <b>Null</b> if requested before first JPEG parsed from stream.</td>
         </tr>
 
     
@@ -542,7 +693,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line56">line 56</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line70">line 70</a>
     </li></ul></dd>
     
 
@@ -613,9 +764,9 @@
 
             
 
-            <td class="description last">- Returns the timestamp of the latest Jpeg as an Integer(milliseconds).
+            <td class="description last">- Returns the timestamp of the latest JPEG as an Integer(milliseconds).
 <br/>
-- Returns <b>-1</b> if requested before first Jpeg is parsed from stream.</td>
+- Returns <b>-1</b> if requested before first JPEG is parsed from stream.</td>
         </tr>
 
     
@@ -654,7 +805,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line92">line 92</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line106">line 106</a>
     </li></ul></dd>
     
 
@@ -764,7 +915,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line66">line 66</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line80">line 80</a>
     </li></ul></dd>
     
 
@@ -844,7 +995,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line206">line 206</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line221">line 221</a>
     </li></ul></dd>
     
 
@@ -896,7 +1047,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat Sep 17 2022 18:34:19 GMT-0500 (Central Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat Sep 24 2022 21:28:23 GMT-0500 (Central Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

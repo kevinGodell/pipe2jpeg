@@ -1,5 +1,5 @@
 ### Todo
-- [ ] Add feature to skip bytes when searching for eoi byte markers
+ - ` `
 
 ### In Progress
 - [ ] Deprecating ***jpeg*** event in favor of using ***data*** event
@@ -8,3 +8,4 @@
 - [x] Handle soi and eoi markers when split across chunks
 - [x] Add feature to set readableObjectMode to output buffer or object
 - [x] Add feature to set buffer concatenation or not when in readableObjectMode
+- [x] Add feature to skip bytes when searching for eoi byte markers
