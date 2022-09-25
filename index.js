@@ -13,7 +13,6 @@ const _EOI = Buffer.from([0xff, 0xd9]); // jpeg end of image ffd9
  */
 class Pipe2Jpeg extends Transform {
   /**
-   *
    * @param {Object} [options]
    * @param {Boolean} [options.readableObjectMode=false] - If true, output will be an object instead of a buffer.
    * @param {Boolean} [options.bufferConcat=false] - If true, concatenate array of buffers before output. <br/>(readableObjectMode must be true to have any effect)
@@ -23,16 +22,6 @@ class Pipe2Jpeg extends Transform {
   constructor(options) {
     options = options && typeof options === 'object' ? options : {};
     super({ readableObjectMode: options.readableObjectMode === true });
-    this._buffers = [];
-    this._size = 0;
-    this._byteOffset = 200;
-    this._markerSplit = false;
-    this._findStart = true;
-    this.on('newListener', event => {
-      if (event === 'jpeg') {
-        deprecate(() => {}, '"jpeg" event will be removed in version 0.4.0. Please use "data" event.')();
-      }
-    });
     this.byteOffset = options.byteOffset;
     if (options.readableObjectMode === true) {
       if (options.bufferConcat === true) {
@@ -43,6 +32,15 @@ class Pipe2Jpeg extends Transform {
     } else {
       this._sendJpeg = this._sendJpegBuffer;
     }
+    this._buffers = [];
+    this._size = 0;
+    this._markerSplit = false;
+    this._findStart = true;
+    this.on('newListener', event => {
+      if (event === 'jpeg') {
+        deprecate(() => {}, '"jpeg" event will be removed in version 0.4.0. Please use "data" event.')();
+      }
+    });
   }
 
   /**
@@ -172,7 +170,7 @@ class Pipe2Jpeg extends Transform {
       if (this._findStart === true) {
         // searching for soi
         if (this._markerSplit === true && chunk[0] === _SOI[1]) {
-          pos = 1 + this._byteOffset;
+          pos = this._byteOffset;
           this._buffers = [_SOI.subarray(0, 1)];
           this._size = 1;
           this._findStart = this._markerSplit = false;
@@ -180,7 +178,7 @@ class Pipe2Jpeg extends Transform {
         }
         soi = chunk.indexOf(_SOI, pos);
         if (soi !== -1) {
-          pos = soi + 2 + this._byteOffset;
+          pos = soi + this._byteOffset;
           this._findStart = this._markerSplit = false;
           continue;
         }
