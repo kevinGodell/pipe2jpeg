@@ -17,7 +17,7 @@ class Pipe2Jpeg extends Transform {
    * @param {Object} [options]
    * @param {Boolean} [options.readableObjectMode=false] - If true, output will be an Object instead of a Buffer.
    * @param {Boolean} [options.bufferConcat=false] - If true, concatenate Array of Buffers before output. <br/>(readableObjectMode must be true to have any effect)
-   * @param {Number} [options.byteOffset=200] - Number of bytes to skip when searching for EOI. <br/>Min: 0, Max: 1000000, Default: 200
+   * @param {Number} [options.byteOffset=200] - Number of bytes to skip when searching for the EOI. <br/>Min: 0, Max: 1000000, Default: 200
    */
   constructor(options) {
     options = options && typeof options === 'object' ? options : {};
@@ -45,7 +45,7 @@ class Pipe2Jpeg extends Transform {
 
   /**
    * @property {Number} byteOffset
-   * - Number of bytes to skip when searching for EOI.
+   * - Number of bytes to skip when searching for the EOI.
    * <br/>
    * - Min: 0, Max: 1000000, Default: 200.
    */
@@ -64,7 +64,7 @@ class Pipe2Jpeg extends Transform {
    * <br/>
    * - Returns <b>Null</b> unless readableObjectMode is true and bufferConcat is false.
    * <br/>
-   * - Returns <b>Null</b> if requested before first JPEG parsed from stream.
+   * - Returns <b>Null</b> if requested before the first JPEG is parsed from the stream.
    * @returns {Array|Null}
    */
   get list() {
@@ -88,7 +88,7 @@ class Pipe2Jpeg extends Transform {
    * <br/>
    * - Returns <b>Null</b> if readableObjectMode is true and bufferConcat is false.
    * <br/>
-   * - Returns <b>Null</b> if requested before first JPEG parsed from stream.
+   * - Returns <b>Null</b> if requested before the first JPEG is parsed from the stream.
    * @returns {Buffer|Null}
    */
   get jpeg() {
@@ -100,7 +100,7 @@ class Pipe2Jpeg extends Transform {
    * @property {Number} timestamp
    * - Returns the timestamp of the latest JPEG as an Integer(milliseconds).
    * <br/>
-   * - Returns <b>-1</b> if requested before first JPEG is parsed from stream.
+   * - Returns <b>-1</b> if requested before the first JPEG is parsed from the stream.
    * @returns {Number}
    */
   get timestamp() {
@@ -108,7 +108,7 @@ class Pipe2Jpeg extends Transform {
   }
 
   /**
-   * Clears cached values.
+   * Clears internally cached values.
    */
   resetCache() {
     this._buffers = [];
