@@ -28,7 +28,7 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>Pipe2Jpeg<span class="signature">(options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Pipe2Jpeg.html">Pipe2Jpeg</a>}</span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>Pipe2Jpeg<span class="signature">(options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h2>
         
     
 </header>
@@ -41,7 +41,7 @@
     
 
     
-    <h4 class="name" id="Pipe2Jpeg"><span class="type-signature"></span>new Pipe2Jpeg<span class="signature">(options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Pipe2Jpeg.html">Pipe2Jpeg</a>}</span></h4>
+    <h4 class="name" id="Pipe2Jpeg"><span class="type-signature"></span>new Pipe2Jpeg<span class="signature">(options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
     
 
     
@@ -171,7 +171,7 @@
                 </td>
             
 
-            <td class="description last">If true, output will be an object instead of a buffer.</td>
+            <td class="description last">If true, output will be an Object instead of a Buffer.</td>
         </tr>
 
     
@@ -210,7 +210,7 @@
                 </td>
             
 
-            <td class="description last">If true, concatenate array of buffers before output. <br/>(readableObjectMode must be true to have any effect)</td>
+            <td class="description last">If true, concatenate Array of Buffers before output. <br/>(readableObjectMode must be true to have any effect)</td>
         </tr>
 
     
@@ -249,7 +249,7 @@
                 </td>
             
 
-            <td class="description last">Number of bytes to skip when searching for EOI. <br/>Default: 200, Min: 0, Max: 1000000</td>
+            <td class="description last">Number of bytes to skip when searching for the EOI. <br/>Min: 0, Max: 1000000, Default: 200</td>
         </tr>
 
     
@@ -297,7 +297,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line22">line 22</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line20">line 20</a>
     </li></ul></dd>
     
 
@@ -322,24 +322,6 @@
 
 
 
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="Pipe2Jpeg.html">Pipe2Jpeg</a></span>
-
-
-    </dd>
-</dl>
-
-    
 
 
 
@@ -418,9 +400,9 @@
 
             
 
-            <td class="description last">- Number of bytes to skip when searching for EOI.
+            <td class="description last">- Number of bytes to skip when searching for the EOI.
 <br/>
-- Default: 200, Min: 0, Max: 1000000.</td>
+- Min: 0, Max: 1000000, Default: 200.</td>
         </tr>
 
     
@@ -459,7 +441,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line52">line 52</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line45">line 45</a>
     </li></ul></dd>
     
 
@@ -533,11 +515,11 @@
 
             
 
-            <td class="description last">- Returns the latest JPEG as a single buffer.
+            <td class="description last">- Returns the latest JPEG as a single Buffer.
 <br/>
 - Returns <b>Null</b> if readableObjectMode is true and bufferConcat is false.
 <br/>
-- Returns <b>Null</b> if requested before first JPEG parsed from stream.</td>
+- Returns <b>Null</b> if requested before the first JPEG is parsed from the stream.</td>
         </tr>
 
     
@@ -576,7 +558,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line94">line 94</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line87">line 87</a>
     </li></ul></dd>
     
 
@@ -650,11 +632,11 @@
 
             
 
-            <td class="description last">- Returns the latest JPEG as an array of buffers.
+            <td class="description last">- Returns the latest JPEG as an Array of Buffers.
 <br/>
 - Returns <b>Null</b> unless readableObjectMode is true and bufferConcat is false.
 <br/>
-- Returns <b>Null</b> if requested before first JPEG parsed from stream.</td>
+- Returns <b>Null</b> if requested before the first JPEG is parsed from the stream.</td>
         </tr>
 
     
@@ -693,7 +675,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line70">line 70</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line63">line 63</a>
     </li></ul></dd>
     
 
@@ -766,7 +748,7 @@
 
             <td class="description last">- Returns the timestamp of the latest JPEG as an Integer(milliseconds).
 <br/>
-- Returns <b>-1</b> if requested before first JPEG is parsed from stream.</td>
+- Returns <b>-1</b> if requested before the first JPEG is parsed from the stream.</td>
         </tr>
 
     
@@ -805,7 +787,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line106">line 106</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line99">line 99</a>
     </li></ul></dd>
     
 
@@ -876,7 +858,7 @@
 
             
 
-            <td class="description last">- Returns the total length of all the buffers in the list.</td>
+            <td class="description last">- Returns the total length of all the Buffers in the <a href="Pipe2Jpeg.html#list">list</a>.</td>
         </tr>
 
     
@@ -915,7 +897,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line80">line 80</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line73">line 73</a>
     </li></ul></dd>
     
 
@@ -951,7 +933,7 @@
 
 
 <div class="description">
-    Clear cached values.
+    Clears internally cached values.
 </div>
 
 
@@ -995,7 +977,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line221">line 221</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line106">line 106</a>
     </li></ul></dd>
     
 
@@ -1031,6 +1013,249 @@
     
 
     
+        <h3 class="subsection-title">Events</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="event:data">data</h4>
+    
+
+    
+
+
+
+<div class="description">
+    - Fires when a single JPEG is parsed from the stream.
+<br/>
+- Event payload will be different based on setting readableObjectMode and bufferConcat in the <a href="Pipe2Jpeg.html">constructor</a>.
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Buffer</span>
+|
+
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>list</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">see <a href="Pipe2Jpeg.html#list">list</a></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>totalLength</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">see <a href="Pipe2Jpeg.html#totalLength">totalLength</a></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>jpeg</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Buffer</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">see <a href="Pipe2Jpeg.html#jpeg">jpeg</a></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line241">line 241</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Examples</h5>
+    
+    <pre class="prettyprint"><code>new Pipe2Jpeg({readableObjectMode: false})
+// data event payload will be a single Buffer</code></pre>
+
+    <pre class="prettyprint"><code>new Pipe2Jpeg({readableObjectMode: true, bufferConcat: false})
+// data event payload will be an Object {list:Array, totalLength:Number} containing an Array of Buffers and its total length</code></pre>
+
+    <pre class="prettyprint"><code>new Pipe2Jpeg({readableObjectMode: true, bufferConcat: true})
+// data event payload will be an Object {jpeg:Buffer} containing a single Buffer</code></pre>
+
+
+
+        
+    
 </article>
 
 </section>
@@ -1041,13 +1266,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Pipe2Jpeg.html">Pipe2Jpeg</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Pipe2Jpeg.html">Pipe2Jpeg</a></li></ul><h3>Events</h3><ul><li><a href="Pipe2Jpeg.html#event:data">data</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat Sep 24 2022 21:28:23 GMT-0500 (Central Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat Oct 01 2022 09:54:16 GMT-0500 (Central Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>
