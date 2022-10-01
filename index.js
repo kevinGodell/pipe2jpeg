@@ -2,8 +2,6 @@
 
 const { Transform } = require('stream');
 
-const { deprecate } = require('util');
-
 const _SOI = Buffer.from([0xff, 0xd8]); // JPEG Start Of Image ffd8
 const _EOI = Buffer.from([0xff, 0xd9]); // JPEG End Of Image ffd9
 const _BYTE_OFFSET = { min: 0, max: 1000000, def: 200 }; // byteOffset limits
@@ -36,11 +34,6 @@ class Pipe2Jpeg extends Transform {
     this._size = 0;
     this._markerSplit = false;
     this._findStart = true;
-    this.on('newListener', event => {
-      if (event === 'jpeg') {
-        deprecate(() => {}, '"jpeg" event will be removed in version 0.4.0. Please use "data" event.')();
-      }
-    });
   }
 
   /**
@@ -127,8 +120,6 @@ class Pipe2Jpeg extends Transform {
   _sendJpegBuffer() {
     this._jpeg = this._buffers.length > 1 ? Buffer.concat(this._buffers, this._size) : this._buffers[0];
     this.emit('data', this._jpeg);
-    // support deprecated jpeg event until 0.4.0
-    this.emit('jpeg', this._jpeg);
   }
 
   /**
