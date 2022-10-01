@@ -1,7 +1,7 @@
 {
   "name": "pipe2jpeg",
   "version": "0.3.4",
-  "description": "Parse individual jpegs from an ffmpeg pipe when output codec is set to mjpeg and format is set to image2pipe, singlejpeg, mjpeg, or mpjeg.",
+  "description": "Parse individual jpegs from an FFmpeg pipe when output codec is set to mjpeg and format is set to image2pipe, singlejpeg, mjpeg, or mpjeg.",
   "main": "index.js",
   "devDependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
@@ -48,5 +48,10 @@
   ],
   "engines": {
     "node": ">=8"
-  }
+  },
+  "funding": [
+    {
+      "url": "https://github.com/kevinGodell"
+    }
+  ]
 }
