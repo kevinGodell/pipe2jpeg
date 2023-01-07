@@ -1,16 +1,16 @@
 {
   "name": "pipe2jpeg",
   "version": "0.4.0",
-  "description": "Parse individual jpegs from an FFmpeg pipe when output codec is set to mjpeg and format is set to image2pipe, singlejpeg, mjpeg, or mpjeg.",
+  "description": "Parse individual jpegs from an ffmpeg pipe when output codec is set to mjpeg and format is set to image2pipe, singlejpeg, mjpeg, or mpjeg.",
   "main": "index.js",
   "devDependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
-    "eslint": "^7.32.0",
-    "eslint-config-prettier": "^8.5.0",
+    "eslint": "^8.31.0",
+    "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "jsdoc": "^3.6.11",
+    "jsdoc": "^4.0.0",
     "nodemon": "^2.0.20",
-    "prettier": "^2.7.1"
+    "prettier": "^2.8.1"
   },
   "scripts": {
     "start": "node examples/example.js",
