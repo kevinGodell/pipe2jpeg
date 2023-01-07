@@ -18,7 +18,7 @@ class Pipe2Jpeg extends Transform {
    * @param {Number} [options.byteOffset=200] - Number of bytes to skip when searching for the EOI. <br/>Min: 0, Max: 1000000, Default: 200
    */
   constructor(options) {
-    options = options && typeof options === 'object' ? options : {};
+    options = options instanceof Object ? options : {};
     super({ writableObjectMode: false, readableObjectMode: options.readableObjectMode === true });
     this.byteOffset = options.byteOffset;
     if (options.readableObjectMode === true) {
@@ -30,10 +30,7 @@ class Pipe2Jpeg extends Transform {
     } else {
       this._sendJpeg = this._sendJpegBuffer;
     }
-    this._buffers = [];
-    this._size = 0;
-    this._markerSplit = false;
-    this._findStart = true;
+    this._setDefaults();
   }
 
   /**
@@ -102,16 +99,25 @@ class Pipe2Jpeg extends Transform {
 
   /**
    * Clears internally cached values.
+   * @fires Pipe2Jpeg#reset
    */
   resetCache() {
-    this._buffers = [];
-    this._size = 0;
-    this._markerSplit = false;
-    this._findStart = true;
+    this.emit('reset');
+    this._setDefaults();
     delete this._totalLength;
     delete this._list;
     delete this._jpeg;
     delete this._timestamp;
+  }
+
+  /**
+   * @private
+   */
+  _setDefaults() {
+    this._buffers = [];
+    this._size = 0;
+    this._markerSplit = false;
+    this._findStart = true;
   }
 
   /**
@@ -127,7 +133,7 @@ class Pipe2Jpeg extends Transform {
    */
   _sendJpegBufferObject() {
     this._jpeg = this._buffers.length > 1 ? Buffer.concat(this._buffers, this._size) : this._buffers[0];
-    this.emit('data', { jpeg: this._jpeg });
+    this.emit('data', { jpeg: this._jpeg, totalLength: this._totalLength });
   }
 
   /**
@@ -135,7 +141,6 @@ class Pipe2Jpeg extends Transform {
    */
   _sendJpegListObject() {
     this._list = this._buffers;
-    this._totalLength = this._size;
     this.emit('data', { list: this._list, totalLength: this._totalLength });
   }
 
@@ -192,6 +197,7 @@ class Pipe2Jpeg extends Transform {
             const cropped = (this._size > 0 || soi === 0) && endOfBuf === true ? chunk : chunk.subarray(soi, pos);
             this._buffers.push(cropped);
             this._size += cropped.length;
+            this._totalLength = this._size;
             this._sendJpeg();
             this._buffers = [];
             this._size = 0;
@@ -237,6 +243,11 @@ class Pipe2Jpeg extends Transform {
     return Number.isNaN(n) ? def : n < min ? min : n > max ? max : n;
   }
 }
+
+/**
+ * - Fires when [resetCache]{@link Pipe2Jpeg#resetCache} is called.
+ * @event Pipe2Jpeg#reset
+ */
 
 /**
  * - Fires when a single JPEG is parsed from the stream.
