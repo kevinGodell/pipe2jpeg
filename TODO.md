@@ -3,6 +3,7 @@
 ---
 
 ### In Progress
+- [ ] Implement buffer pool for performance improvement
 
 ---
 
