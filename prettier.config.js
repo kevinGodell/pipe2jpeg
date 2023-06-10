@@ -1,8 +1,7 @@
 module.exports = {
-  printWidth: 120,
+  printWidth: 200,
   tabWidth: 2,
   semi: true,
   singleQuote: true,
-  quoteProps: 'as-needed',
   arrowParens: 'avoid',
 };
