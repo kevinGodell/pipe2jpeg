@@ -31,13 +31,13 @@ const params = [
   '-c:v',
   'mjpeg',
   '-pix_fmt',
-  'yuvj422p',
+  'yuvj420p',
   '-f',
   'image2pipe', // image2pipe, singlejpeg, mjpeg, or mpjpeg
   '-vf',
   'fps=1,scale=640:360',
   '-q',
-  '1',
+  '2',
   '-frames',
   '100',
   'pipe:1'
@@ -92,6 +92,10 @@ const jpeg = p2j.jpeg;
 If you have consistently sized jpegs, then setting **byteOffset** to a number approximately 75% of the expected size can minimize the time searching for EOI and result in a small performance gain:
 ```javascript
 const p2j = new Pipe2Jpeg({ byteOffset: 10000 /* default 200 */ });
+```
+While **readableObjectMode** is set to false or **bufferConcat** is set to true, an experimental buffer pool can be used to reduce garbage collection and increase performance:
+```javascript
+const p2j = new Pipe2Jpeg({ pool: 1 /* default 0 */ });
 ```
 ### testing:
 Clone the repository
