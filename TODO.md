@@ -3,6 +3,7 @@
 ---
 
 ### In Progress
+- [x] Implement buffer pool for performance improvement (experimental)
 
 ---
 
@@ -12,4 +13,4 @@
 - [x] Add feature to set buffer concatenation or not when in readableObjectMode
 - [x] Add feature to skip bytes when searching for eoi byte markers
 - [x] Deprecating ***jpeg*** event in favor of using ***data*** event
-- [x] Emit ***reset*** event when calling resetCache()
+- [x] Emit ***reset*** event when calling reset()

@@ -1,14 +1,9 @@
 module.exports = {
   env: {
-    es2017: true,
-    es2020: true,
-    es6: true,
+    es2022: true,
     node: true,
   },
   extends: ['plugin:prettier/recommended'],
-  parserOptions: {
-    ecmaVersion: 11,
-  },
   plugins: ['prettier'],
   rules: {
     'prettier/prettier': 'error',
