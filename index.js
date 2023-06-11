@@ -146,18 +146,6 @@ class Pipe2Jpeg extends Transform {
    * Clears internally cached values.
    * @fires Pipe2Jpeg#reset
    */
-  resetCache() {
-    /*
-    todo after version 0.5.0
-    deprecate
-    */
-    this.reset();
-  }
-
-  /**
-   * Clears internally cached values.
-   * @fires Pipe2Jpeg#reset
-   */
   reset() {
     this.emit('reset');
     this.#timestamp = undefined;
@@ -324,7 +312,7 @@ class Pipe2Jpeg extends Transform {
 }
 
 /**
- * - Fires when [resetCache]{@link Pipe2Jpeg#resetCache} is called.
+ * - Fires when [reset]{@link Pipe2Jpeg#reset} is called.
  * @event Pipe2Jpeg#reset
  */
 
