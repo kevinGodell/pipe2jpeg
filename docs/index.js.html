@@ -28,51 +28,82 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict';
 
-const { Transform } = require('stream');
+const BufferPool = require('./lib/buffer-pool');
 
-const _SOI = Buffer.from([0xff, 0xd8]); // JPEG Start Of Image ffd8
-const _EOI = Buffer.from([0xff, 0xd9]); // JPEG End Of Image ffd9
-const _BYTE_OFFSET = { min: 0, max: 1000000, def: 200 }; // byteOffset limits
+const { Transform } = require('stream');
 
 /**
  * @fileOverview Creates a stream transform for parsing piped JPEGs from [FFmpeg]{@link https://ffmpeg.org/}.
  * @requires stream.Transform
  */
 class Pipe2Jpeg extends Transform {
+  /* ----> static private fields &lt;---- */
+  static #SOI = Pipe2Jpeg.#markerFrom([0xff, 0xd8]); // JPEG Start Of Image ffd8
+  static #EOI = Pipe2Jpeg.#markerFrom([0xff, 0xd9]); // JPEG End Of Image ffd9
+  static #BYTE_OFFSET = { min: 0, max: 1000000, def: 200 }; // byteOffset limits
+
+  /* ----> private method placeholders &lt;---- */
+  #bufferConcat = Buffer.concat;
+  #sendData = this.#sendAsBuffer;
+
+  /* ----> private fields &lt;---- */
+  #bufferPool = undefined;
+  #chunks = [];
+  #chunksTotalLength = 0;
+  #markerSplit = false;
+  #findStart = true;
+
+  /* ----> private fields with getter (readonly) &lt;---- */
+  #poolLength;
+  #timestamp;
+  #jpeg;
+  #list;
+  #totalLength;
+
+  /* ----> private fields with getter and setter &lt;---- */
+  #byteOffset;
+
   /**
-   * @param {Object} [options]
-   * @param {Boolean} [options.readableObjectMode=false] - If true, output will be an Object instead of a Buffer.
-   * @param {Boolean} [options.bufferConcat=false] - If true, concatenate Array of Buffers before output. &lt;br/>(readableObjectMode must be true to have any effect)
-   * @param {Number} [options.byteOffset=200] - Number of bytes to skip when searching for the EOI. &lt;br/>Min: 0, Max: 1000000, Default: 200
+   * @param {object} [options]
+   * @param {boolean} [options.readableObjectMode=false] - If true, output will be an Object instead of a Buffer.
+   * @param {boolean} [options.bufferConcat=false] - If true, concatenate Array of Buffers before output. &lt;br/>(readableObjectMode must be true to have any effect)
+   * @param {number} [options.byteOffset=200] - Number of bytes to skip when searching for the EOI. &lt;br/>Min: 0, Max: 1000000, Default: 200
+   * @param {number} [options.pool=0] - Experimental buffer pool
    */
   constructor(options) {
     options = options instanceof Object ? options : {};
     super({ writableObjectMode: false, readableObjectMode: options.readableObjectMode === true });
     this.byteOffset = options.byteOffset;
+    if (options.pool > 0 &amp;&amp; (options.readableObjectMode !== true || options.bufferConcat === true)) {
+      this.#poolLength = 2; // todo currently fixed count while experimental // options.pool + 1;
+      this.#bufferPool = new BufferPool({ length: this.#poolLength });
+      this.#bufferConcat = this.#bufferPool.concat.bind(this.#bufferPool);
+    }
     if (options.readableObjectMode === true) {
       if (options.bufferConcat === true) {
-        this._sendJpeg = this._sendJpegBufferObject;
+        this.#sendData = this.#sendAsBufferObject;
       } else {
-        this._sendJpeg = this._sendJpegListObject;
+        this.#sendData = this.#sendAsListObject;
       }
-    } else {
-      this._sendJpeg = this._sendJpegBuffer;
     }
-    this._setDefaults();
   }
 
   /**
-   * @property {Number} byteOffset
+   * @property {number} byteOffset
    * - Number of bytes to skip when searching for the EOI.
    * &lt;br/>
    * - Min: 0, Max: 1000000, Default: 200.
    */
   get byteOffset() {
-    return this._byteOffset;
+    return this.#byteOffset;
   }
 
+  /**
+   *
+   * @param {number|string} n
+   */
   set byteOffset(n) {
-    this._byteOffset = Pipe2Jpeg._valInt(n, _BYTE_OFFSET.min, _BYTE_OFFSET.max, _BYTE_OFFSET.def);
+    this.#byteOffset = Pipe2Jpeg.#validateInt(n, Pipe2Jpeg.#BYTE_OFFSET.def, Pipe2Jpeg.#BYTE_OFFSET.min, Pipe2Jpeg.#BYTE_OFFSET.max);
   }
 
   /**
@@ -86,17 +117,31 @@ class Pipe2Jpeg extends Transform {
    * @returns {Array|Null}
    */
   get list() {
-    return this._list || null;
+    return this.#list || null;
   }
 
   /**
    * @readonly
-   * @property {Number} totalLength
+   * @property {number} totalLength
    * - Returns the total length of all the Buffers in the [list]{@link Pipe2Jpeg#list}.
-   * @returns {Number}
+   * &lt;br/>
+   * - Returns &lt;b>-1&lt;/b> if requested before the first JPEG is parsed from the stream.
+   * @returns {number}
    */
   get totalLength() {
-    return this._totalLength || 0;
+    return this.#totalLength || -1;
+  }
+
+  /**
+   * @readonly
+   * @property {number} poolLength
+   * - Returns the number of array buffers in pool
+   * &lt;br/>
+   * - Returns &lt;b>-1&lt;/b> if pool not in use.
+   * @returns {number}
+   */
+  get poolLength() {
+    return this.#poolLength || -1;
   }
 
   /**
@@ -110,79 +155,86 @@ class Pipe2Jpeg extends Transform {
    * @returns {Buffer|Null}
    */
   get jpeg() {
-    return this._jpeg || null;
+    return this.#jpeg || null;
   }
 
   /**
    * @readonly
-   * @property {Number} timestamp
+   * @property {number} timestamp
    * - Returns the timestamp of the latest JPEG as an Integer(milliseconds).
    * &lt;br/>
    * - Returns &lt;b>-1&lt;/b> if requested before the first JPEG is parsed from the stream.
-   * @returns {Number}
+   * @returns {number}
    */
   get timestamp() {
-    return this._timestamp || -1;
+    return this.#timestamp || -1;
   }
 
   /**
    * Clears internally cached values.
    * @fires Pipe2Jpeg#reset
    */
-  resetCache() {
+  reset() {
     this.emit('reset');
-    this._setDefaults();
-    delete this._totalLength;
-    delete this._list;
-    delete this._jpeg;
-    delete this._timestamp;
+    this.#timestamp = undefined;
+    this.#jpeg = undefined;
+    this.#list = undefined;
+    this.#totalLength = undefined;
+    this.#chunks = [];
+    this.#chunksTotalLength = 0;
+    this.#markerSplit = false;
+    this.#findStart = true;
+  }
+
+  /**
+   *
+   * @returns {object}
+   */
+  toJSON() {
+    return {
+      poolLength: this.poolLength,
+      timestamp: this.timestamp,
+      jpeg: this.jpeg,
+      list: this.list,
+      totalLength: this.totalLength,
+    };
   }
 
   /**
    * @private
    */
-  _setDefaults() {
-    this._buffers = [];
-    this._size = 0;
-    this._markerSplit = false;
-    this._findStart = true;
+  #sendAsBuffer() {
+    this.#jpeg = this.#chunks.length > 1 ? this.#bufferConcat(this.#chunks, this.#chunksTotalLength) : this.#chunks[0];
+    this.emit('data', this.#jpeg, { totalLength: this.#totalLength });
   }
 
   /**
    * @private
    */
-  _sendJpegBuffer() {
-    this._jpeg = this._buffers.length > 1 ? Buffer.concat(this._buffers, this._size) : this._buffers[0];
-    this.emit('data', this._jpeg);
+  #sendAsBufferObject() {
+    this.#jpeg = this.#chunks.length > 1 ? this.#bufferConcat(this.#chunks, this.#chunksTotalLength) : this.#chunks[0];
+    this.emit('data', { jpeg: this.#jpeg, totalLength: this.#totalLength });
   }
 
   /**
    * @private
    */
-  _sendJpegBufferObject() {
-    this._jpeg = this._buffers.length > 1 ? Buffer.concat(this._buffers, this._size) : this._buffers[0];
-    this.emit('data', { jpeg: this._jpeg, totalLength: this._totalLength });
-  }
-
-  /**
-   * @private
-   */
-  _sendJpegListObject() {
-    this._list = this._buffers;
-    this.emit('data', { list: this._list, totalLength: this._totalLength });
+  #sendAsListObject() {
+    this.#list = this.#chunks;
+    this.emit('data', { list: this.#list, totalLength: this.#totalLength });
   }
 
   /**
    * @param {Buffer} chunk
-   * @param {Number} pos
-   * @returns {{foundEOI:Boolean,newPos:Number}}
+   * @param {number} pos
+   * @returns {{foundEOI:boolean,newPos:number}}
    * @private
    */
-  _findEOI(chunk, pos) {
-    if (this._markerSplit === true &amp;&amp; chunk[0] === _EOI[1]) {
+  #findEOI(chunk, pos) {
+    if (this.#markerSplit === true &amp;&amp; chunk[0] === Pipe2Jpeg.#EOI[1]) {
       return { foundEOI: true, newPos: 1 };
     }
-    const eoi = chunk.indexOf(_EOI, pos);
+    const eoi = chunk.indexOf(Pipe2Jpeg.#EOI, pos);
     if (eoi !== -1) {
       return { foundEOI: true, newPos: eoi + 2 };
     }
@@ -193,44 +245,43 @@ class Pipe2Jpeg extends Transform {
    * @param {Buffer} chunk
    * @private
    */
-  _parseJpeg(chunk) {
+  #parseChunk(chunk) {
     const chunkLen = chunk.length;
     let pos = 0;
     let soi = 0;
     while (true) {
-      if (this._findStart === true) {
+      if (this.#findStart === true) {
         // searching for soi
-        if (this._markerSplit === true &amp;&amp; chunk[0] === _SOI[1]) {
-          pos = this._byteOffset;
-          this._buffers = [_SOI.subarray(0, 1)];
-          this._size = 1;
-          this._findStart = this._markerSplit = false;
+        if (this.#markerSplit === true &amp;&amp; chunk[0] === Pipe2Jpeg.#SOI[1]) {
+          pos = this.#byteOffset;
+          this.#chunks = [Pipe2Jpeg.#SOI.subarray(0, 1)];
+          this.#chunksTotalLength = 1;
+          this.#findStart = this.#markerSplit = false;
           continue;
         }
-        soi = chunk.indexOf(_SOI, pos);
+        soi = chunk.indexOf(Pipe2Jpeg.#SOI, pos);
         if (soi !== -1) {
-          pos = soi + this._byteOffset;
-          this._findStart = this._markerSplit = false;
+          pos = soi + this.#byteOffset;
+          this.#findStart = this.#markerSplit = false;
           continue;
         }
-        this._markerSplit = chunk[chunkLen - 1] === _SOI[0];
+        this.#markerSplit = chunk[chunkLen - 1] === Pipe2Jpeg.#SOI[0];
         break;
       } else {
-        if (this._size + chunkLen >= this._byteOffset) {
-          const { foundEOI, newPos } = this._findEOI(chunk, pos);
+        if (this.#chunksTotalLength + chunkLen >= this.#byteOffset) {
+          const { foundEOI, newPos } = this.#findEOI(chunk, pos);
           if (foundEOI === true) {
-            this._timestamp = Date.now();
+            this.#timestamp = Date.now();
             pos = newPos;
             const endOfBuf = pos === chunkLen;
-            const cropped = (this._size > 0 || soi === 0) &amp;&amp; endOfBuf === true ? chunk : chunk.subarray(soi, pos);
-            this._buffers.push(cropped);
-            this._size += cropped.length;
-            this._totalLength = this._size;
-            this._sendJpeg();
-            this._buffers = [];
-            this._size = 0;
-            this._markerSplit = false;
-            this._findStart = true;
+            const cropped = (this.#chunksTotalLength > 0 || soi === 0) &amp;&amp; endOfBuf === true ? chunk : chunk.subarray(soi, pos);
+            this.#chunks.push(cropped);
+            this.#totalLength = this.#chunksTotalLength += cropped.length;
+            this.#sendData();
+            this.#chunks = [];
+            this.#chunksTotalLength = 0;
+            this.#markerSplit = false;
+            this.#findStart = true;
             if (endOfBuf) {
               break;
             }
@@ -238,9 +289,9 @@ class Pipe2Jpeg extends Transform {
           }
         }
         const cropped = soi === 0 ? chunk : chunk.subarray(soi);
-        this._buffers.push(cropped);
-        this._size += cropped.length;
-        this._markerSplit = chunk[chunkLen - 1] === _EOI[0];
+        this.#chunks.push(cropped);
+        this.#chunksTotalLength += cropped.length;
+        this.#markerSplit = chunk[chunkLen - 1] === Pipe2Jpeg.#EOI[0];
         break;
       }
     }
@@ -253,27 +304,43 @@ class Pipe2Jpeg extends Transform {
    * @private
    */
   _transform(chunk, encoding, callback) {
-    this._parseJpeg(chunk);
+    this.#parseChunk(chunk);
     callback();
   }
 
   /**
-   * @param {*} n
-   * @param {Number} min
-   * @param {Number} max
-   * @param {Number} def
-   * @returns {Number}
+   * Validate number is in range.
+   * @param {number|string} n
+   * @param {number} def
+   * @param {number} min
+   * @param {number} max
+   * @returns {number}
    * @private
    * @static
    */
-  static _valInt(n, min, max, def) {
+  static #validateInt(n, def, min, max) {
     n = Number.parseInt(n);
     return Number.isNaN(n) ? def : n &lt; min ? min : n > max ? max : n;
+  }
+
+  /**
+   * Create marker Buffer.
+   * @param {number[]} arr
+   * @returns {Buffer}
+   * @private
+   * @static
+   */
+  static #markerFrom(arr) {
+    const buffer = Buffer.allocUnsafeSlow(2);
+    for (let i = 0; i &lt; 2; ++i) {
+      buffer[i] = arr[i];
+    }
+    return buffer;
   }
 }
 
 /**
- * - Fires when [resetCache]{@link Pipe2Jpeg#resetCache} is called.
+ * - Fires when [reset]{@link Pipe2Jpeg#reset} is called.
  * @event Pipe2Jpeg#reset
  */
 
@@ -282,17 +349,17 @@ class Pipe2Jpeg extends Transform {
  * &lt;br/>
  * - Event payload will be different based on setting readableObjectMode and bufferConcat in the [constructor]{@link Pipe2Jpeg}.
  * @event Pipe2Jpeg#data
- * @type {Buffer|Object}
+ * @type {Buffer|object}
  * @property {Array} [list] - see [list]{@link Pipe2Jpeg#list}
- * @property {Number} [totalLength] - see [totalLength]{@link Pipe2Jpeg#totalLength}
+ * @property {number} [totalLength] - see [totalLength]{@link Pipe2Jpeg#totalLength}
  * @property {Buffer} [jpeg]- see [jpeg]{@link Pipe2Jpeg#jpeg}
  * @example
  * new Pipe2Jpeg({readableObjectMode: false})
  * // data event payload will be a single Buffer
  * @example new Pipe2Jpeg({readableObjectMode: true, bufferConcat: false})
- * // data event payload will be an Object {list:Array, totalLength:Number} containing an Array of Buffers and its total length
+ * // data event payload will be an Object {list:Array, totalLength:number} containing an Array of Buffers and its total length
  * @example new Pipe2Jpeg({readableObjectMode: true, bufferConcat: true})
- * // data event payload will be an Object {jpeg:Buffer} containing a single Buffer
+ * // data event payload will be an Object {jpeg:Buffer, totalLength:number} containing a single Buffer
  */
 
 module.exports = Pipe2Jpeg;
@@ -312,7 +379,7 @@ module.exports = Pipe2Jpeg;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Sat Jan 07 2023 13:06:13 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sun Jun 11 2023 08:28:10 GMT-0500 (Central Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>
