@@ -5,11 +5,11 @@
   "main": "index.js",
   "devDependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
-    "eslint": "^8.31.0",
-    "eslint-config-prettier": "^8.6.0",
+    "eslint": "^8.42.0",
+    "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
     "jsdoc": "^4.0.2",
-    "prettier": "^2.8.1"
+    "prettier": "^2.8.8"
   },
   "scripts": {
     "test": "node tests/test5.js && node tests/test6.js && node tests/test7.js && node tests/test8.js && node tests/test9.js && node tests/test10.js && node tests/test11.js && node tests/test12.js && node tests/test13.js && node tests/test14.js && npm run vaco",
